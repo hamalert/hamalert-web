@@ -45,6 +45,11 @@
 <p>HamAlert was created by Manuel Kasper (HB9DQM). Instead of emailing the author with questions, issues or feature requests, please search or post on the <a href="https://forum.hamalert.org/">HamAlert Forum</a>. Thanks!</p>
 
 
+<h3>Source code</h3>
+
+<p>The source code for HamAlert can be found on <a href="https://github.com/hamalert">GitHub</a>.</p>
+
+
 <h3>Privacy Policy</h3>
 
 <p>See the <a href="privacy">Privacy Policy</a> for HamAlert.</p>
