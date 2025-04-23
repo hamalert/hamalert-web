@@ -118,7 +118,7 @@ input::-webkit-inner-spin-button {
 <div id="spotAlert" class="alert alert-danger" role="alert" style="display: none"></div>
 
 <form id="simulateForm">
-	<table class="table table-bordered table-condensed table-responsive editorConditionsTable">
+	<table class="table table-rounded table-condensed table-responsive editorConditionsTable">
 		<tbody>
 			<tr>
 				<th>Full callsign</th>

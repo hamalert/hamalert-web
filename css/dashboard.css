@@ -114,6 +114,9 @@ tr.trigger-useless td {
 .editorConditionsTable td.actionbuttons {
 	vertical-align: top !important;
 }
+.editorConditionsTable tr.addcondrow th {
+	padding-top: 5px !important;
+}
 
 .editorConditionsTable {
 	margin-bottom: 0.5em;
@@ -372,4 +375,30 @@ tt {
 }
 .telnethost .proto {
 	color: #999;
+}
+
+/* Rounded tables */
+.table-rounded {
+  border-collapse: separate;
+  border: solid #ddd 1px;
+  border-radius: 6px;
+}
+.table-rounded td, .table-rounded th {
+  border-left: 1px solid #ddd;
+  border-top: 1px solid #ddd;
+}
+.table-rounded td:first-child, .table-rounded th:first-child {
+	border-left: none;
+}
+.table-rounded tr:first-child > td, .table-rounded tr:first-child > th {
+  border-top: none;
+}
+.table-rounded tbody tr:first-child > th:first-child {
+  border-radius: 6px 0 0 0;
+}
+.table-rounded tbody tr:last-child > th:first-child {
+  border-radius: 0 0 0 6px;
+}
+.table-rounded tbody tr:only-child > th:first-child {
+  border-radius: 6px 0 0 6px;
 }

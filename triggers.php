@@ -165,7 +165,7 @@ function disableTrigger(button, disabled) {
 	<a href="https://play.google.com/store/apps/details?id=org.hamalert.app&hl=en&gl=US"><img alt="Get it on Google Play" src="/images/google-play-badge.png" style="height: 40px" /></a></p>
 </div>
 
-<table class="table table-striped table-hover table-bordered triggers" style="display: none">
+<table class="table table-rounded table-striped table-hover triggers" style="display: none">
 	<thead>
 		<tr>
 			<th>Conditions</th>
@@ -188,7 +188,7 @@ function disableTrigger(button, disabled) {
 	{{for triggers}}
 	<tr class="trigger {{if disabled}}trigger-disabled{{/if}} {{if useless}}trigger-useless{{/if}}" data-id="{{>_id}}">
 		<td>
-			<table class="table table-bordered table-condensed conditionsTable" style="width: auto">
+			<table class="table table-rounded table-condensed conditionsTable" style="width: auto">
 				{{for ~conditionsOrder ~conditions=conditions}}
 				{{if ~conditions[#data] !== undefined}}
 				<tr>

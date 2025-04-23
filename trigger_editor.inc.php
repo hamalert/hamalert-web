@@ -34,7 +34,7 @@
 				
 				<div>
 					<label>Conditions</label>
-					<table class="table table-bordered table-condensed editorConditionsTable" style="width: auto">
+					<table class="table table-rounded table-condensed editorConditionsTable" style="width: auto">
 						<tbody>
 						</tbody>
 					</table>
@@ -91,7 +91,7 @@
 	</tr>
 	{{/if}}
 	{{/for}}
-	<tr>
+	<tr class="addcondrow">
 		<th colspan="3">
 			<select class="form-control selectpicker" data-title="Add a condition" data-width="auto" data-live-search="true" id="newCondition" onchange="addCondition()">
 				{{for ~conditionsGroups ~conditions=conditions}}
