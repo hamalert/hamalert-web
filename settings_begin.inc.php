@@ -38,7 +38,7 @@ if (@$userScalable)
 
 <body>
 
-	<nav class="navbar navbar-inverse navbar-fixed-top">
+	<nav class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
 			<div class="navbar-header">
 				<?php if (!@$_GET['hidenav']): ?>
@@ -48,9 +48,9 @@ if (@$userScalable)
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="about" style="padding-top: 8px"><img alt="HamAlert" src="images/hamalert.png" style="width: 160px; height: 32px"></a>
+				<a class="navbar-brand" href="about" style="padding-top: 8px"><img alt="HamAlert" src="images/hamalert_wb.png" style="width: 160px; height: 32px"></a>
 				<?php else: ?>
-				<a class="navbar-brand" href="#" style="padding-top: 8px"><img alt="HamAlert" src="images/hamalert.png" style="width: 160px; height: 32px"></a>
+				<a class="navbar-brand" href="#" style="padding-top: 8px"><img alt="HamAlert" src="images/hamalert_wb.png" style="width: 160px; height: 32px"></a>
 				<?php endif; ?>
 			</div>
 			<?php if (!@$_GET['hidenav']): ?>
@@ -74,7 +74,7 @@ if (@$userScalable)
 					<li><p class="navbar-text"><a href="account" style="color: #ffffff"><?php echo htmlspecialchars($_SESSION['user']['username']) ?></a>
 							<a href="destinations" class="label label-danger" style="margin-left: 0.5em">Alerts disabled</a></p></li>
 					<?php else: ?>
-					<li><a href="account" style="color: #ffffff"><?php echo htmlspecialchars($_SESSION['user']['username']) ?></a></li>
+					<li><a href="account" style="color: #000"><?php echo htmlspecialchars($_SESSION['user']['username']) ?></a></li>
 					<?php endif; ?>
 					<li><a href="logout">Logout</a></li>
 					<?php else: ?>
