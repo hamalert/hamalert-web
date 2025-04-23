@@ -74,7 +74,7 @@ if (@$userScalable)
 					<li><p class="navbar-text"><a href="account" style="color: #ffffff"><?php echo htmlspecialchars($_SESSION['user']['username']) ?></a>
 							<a href="destinations" class="label label-danger" style="margin-left: 0.5em">Alerts disabled</a></p></li>
 					<?php else: ?>
-					<li><a href="account" style="color: #000"><?php echo htmlspecialchars($_SESSION['user']['username']) ?></a></li>
+					<li class="myaccount"><a href="account"><?php echo htmlspecialchars($_SESSION['user']['username']) ?></a></li>
 					<?php endif; ?>
 					<li><a href="logout">Logout</a></li>
 					<?php else: ?>

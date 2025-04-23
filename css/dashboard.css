@@ -15,6 +15,11 @@ h1 {
 	max-height: 75vh;
 }
 
+.myaccount a {
+	color: #333 !important;
+	font-weight: 500;
+}
+
 fieldset {
 	margin-top: 0.5em;
 }
