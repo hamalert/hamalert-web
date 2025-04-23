@@ -571,6 +571,39 @@ function validateTrigger() {
 		}
 	});
 
+	// Check for "silly" triggers that only have one very generic condition
+	let isSilly = false;
+	if (Object.keys(currentTrigger.conditions).length === 1) {
+		if (currentTrigger.conditions.band &&
+			currentTrigger.conditions.band.some(band => 
+				band === "hf" ||
+				(band.slice(-1) === "m" && band.slice(0, -1) <= 160 && band.slice(0, -1) >= 10)
+			)) {
+			// Only one HF band condition is silly
+			isSilly = true;
+		} else if (currentTrigger.conditions.mode &&
+			currentTrigger.conditions.mode.some(mode => 
+				mode === "cw" || mode === "ssb" || mode === "fm" || mode === "ft8"
+			)) {
+			// Only one common mode condition is silly
+			isSilly = true;
+		} else if (currentTrigger.conditions.source &&
+			currentTrigger.conditions.source.some(source => 
+				source === "cluster" || source === "rbn" || source === "pskreporter"
+			)) {
+			// Only one common source condition is silly
+			isSilly = true;
+		} else if (currentTrigger.conditions.continent ||
+				   currentTrigger.conditions.cq ||
+				   currentTrigger.conditions.spotterContinent ||
+				   currentTrigger.conditions.spotterCq) {
+			isSilly = true;
+		}
+	}
+	if (isSilly) {
+		errors.push("Your trigger is too unspecific and will match too many spots. Please add more conditions, or make your conditions more specific.");
+	}
+
 	$('#errorAlert').remove();
 	if (errors.length > 0) {
 		var errorAlertHtml = $.templates('#errorAlertTmpl').render({errors: errors});
