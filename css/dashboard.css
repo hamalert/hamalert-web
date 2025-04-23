@@ -7,6 +7,10 @@ body {
   padding-top: 50px;
 }
 
+h1 {
+	font-size: 30px;
+}
+
 .navbar-fixed-top .navbar-collapse {
 	max-height: 75vh;
 }
