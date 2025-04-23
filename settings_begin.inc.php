@@ -48,9 +48,9 @@ if (@$userScalable)
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="about" style="padding-top: 8px"><img alt="HamAlert" src="images/hamalert_wb.png" style="width: 160px; height: 32px"></a>
+				<a class="navbar-brand" href="about" style="padding-top: 8px"><img alt="HamAlert" src="images/hamalert_wb.png" srcset="images/hamalert_wb@2x.png 2x" style="width: 160px; height: 32px"></a>
 				<?php else: ?>
-				<a class="navbar-brand" href="#" style="padding-top: 8px"><img alt="HamAlert" src="images/hamalert_wb.png" style="width: 160px; height: 32px"></a>
+				<a class="navbar-brand" href="#" style="padding-top: 8px"><img alt="HamAlert" src="images/hamalert_wb.png" srcset="images/hamalert_wb@2x.png 2x" style="width: 160px; height: 32px"></a>
 				<?php endif; ?>
 			</div>
 			<?php if (!@$_GET['hidenav']): ?>

@@ -30,7 +30,7 @@ if (@$_REQUEST['username'] && @$_REQUEST['password']) {
 <?php include("detect_ie.inc.php") ?>
 
 <div id="halogo" class="container">
-	<img src="images/hamalert_wb.png" alt="HamAlert" />
+	<img src="images/hamalert_wb.png" alt="HamAlert" srcset="images/hamalert_wb@2x.png 2x" />
 	
 	<p>Push notifications for amateur radio spots</p>
 </div>
