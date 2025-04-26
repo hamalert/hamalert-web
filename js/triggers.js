@@ -35,7 +35,8 @@ var conditionLabels = {
 	'summitRefs': 'Summit reference list',
 	'wwffDivision': 'Park division',
 	'wwffRef': 'Park reference',
-	'wwffRefs': 'Park reference list'
+	'wwffRefs': 'Park reference list',
+	'wwbotaScheme': 'WWBOTA scheme',
 };
 
 var conditionsOrder = [
@@ -48,6 +49,7 @@ var conditionsOrder = [
 	'iotaGroupRef',
 	'summitAssociation', 'summitRegion', 'summitRef', 'summitRefs', 'summitPointsFrom', 'summitActivationsFrom',
 	'wwffDivision', 'wwffRef', 'wwffRefs',
+	'wwffScheme',
 	'notCallsign', 'notFullCallsign', 'notSpotter', 'notPrefix'
 ];
 
@@ -61,6 +63,7 @@ var conditionsGroups = [
 	{title: 'IOTA', conditions: ['iotaGroupRef']},
 	{title: 'SOTA', conditions: ['summitAssociation', 'summitRegion', 'summitRef', 'summitRefs', 'summitPointsFrom', 'summitActivationsFrom']},
 	{title: 'WWFF/POTA', conditions: ['wwffDivision', 'wwffRef', 'wwffRefs']},
+	{title: 'WWBOTA', conditions: ['wwffScheme']},
 	{title: 'Callsign exclusions', conditions: ['notCallsign', 'notFullCallsign', 'notSpotter', 'notPrefix']}
 ];
 
@@ -237,6 +240,11 @@ var arrayConditions = {
 		maxDisplaySmall: 2,
 		suffix: 'parks'
 	},
+	'wwbotaScheme': {
+		maxDisplay: 3,
+		maxDisplaySmall: 5,
+		suffix: 'schemes'
+	},
 };
 
 var sources = {
@@ -245,7 +253,8 @@ var sources = {
 	'cluster': 'Cluster',
 	'pskreporter': 'PSK Reporter',
 	'pota': 'POTA',
-	'wwff': 'WWFFwatch'
+	'wwff': 'WWFFwatch',
+	'wwbota': 'WWBOTA'
 };
 
 var modes = {

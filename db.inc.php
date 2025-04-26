@@ -414,6 +414,11 @@ function getWwffParksForDivision($division) {
 	return $db->wwffParks->find(['division' => $division, 'status' => 'active'], ['sort' => ['reference' => 1]])->toArray();
 }
 
+function getAllWwbotaSchemes() {
+	global $db;
+	return $db->wwffSchemes->find([], ['sort' => ['scheme' => 1]])->toArray();
+}
+
 function getAllIotaGroups() {
 	global $db;
 	return $db->iotaGroups->find([], ['sort' => ['grpRef' => 1]])->toArray();

@@ -2,6 +2,7 @@ var currentTrigger;
 var dxccs, dxccKeyValueList;
 var associations, associationsKeyValueList;
 var wwffDivisions, wwffDivisionsKeyValueList;
+var wwbotaSchemes, wwbotaSchemesKeyValueList;
 var iotaGroups, iotaGroupsKeyValueList;
 var hasChanges;
 
@@ -162,6 +163,13 @@ var editorFunctions = {
 	'wwffRefs': function(conditionName) {
 		return conditionTextArea(conditionName)
 	},
+	'wwbotaScheme': function(conditionName) {
+		return conditionValuePickerAsync(conditionName, function(callback) {
+			fetchWwbotaSchemes(function(wwbotaSchemes, wwbotaSchemesKeyValueList) {
+				callback(wwbotaSchemesKeyValueList);
+			})
+		});
+	},
 	'iotaGroupRef': function(conditionName) {
 		return conditionValuePickerAsync(conditionName, function(callback) {
 			fetchIotaGroups(function(iotaGroups, iotaGroupsKeyValueList) {
@@ -262,6 +270,25 @@ function fetchWwffDivisions(callback) {
 			});
 			wwffDivisionsKeyValueList = makeWwffDivisionsKeyValueList(newWwffDivisions);
 			callback(wwffDivisions, wwffDivisionsKeyValueList);
+		}
+	});
+}
+
+function fetchWwbotaSchemes(callback) {
+	if (wwbotaSchemes) {
+		callback(wwbotaSchemes, wwbotaSchemesKeyValueList);
+		return;
+	}
+	
+	$.get({
+		url: 'ajax/wwbota_schemes',
+		success: function(newWwbotaSchemes) {
+			wwbotaSchemes = {};
+			newWwbotaSchemes.forEach(function(scheme) {
+				wwbotaSchemes[scheme.scheme] = scheme;
+			});
+			wwbotaSchemesKeyValueList = makeWwbotaSchemesKeyValueList(newWwbotaSchemes);
+			callback(wwbotaSchemes, wwbotaSchemesKeyValueList);
 		}
 	});
 }
@@ -898,6 +925,16 @@ function makeSummitsKeyValueList(summits) {
 function makeWwffDivisionsKeyValueList(wwffDivisions) {
 	var kvl = wwffDivisions.map(function(value) {
 		return [value.division, value.name, value.program != 'wwff' ? value.program.toUpperCase() : undefined];
+	});
+	// add "any" entry
+	kvl.unshift(['*', '* (any)']);
+	return kvl;
+}
+
+// Returns an array of key/value pairs
+function makeWwbotaSchemesKeyValueList(wwbotaSchemes) {
+	var kvl = wwbotaSchemes.map(function(value) {
+		return [value.scheme, value.scheme, undefined];
 	});
 	// add "any" entry
 	kvl.unshift(['*', '* (any)']);

@@ -54,6 +54,9 @@ if (!$spot) {
 	} else if (@$spot['wwffRef']) {
 		$addInfo = "WWFF: " . $spot['wwffRef'] . " " . $spot['wwffName'];
 	}
+	} else if (@$spot['wwbotaRef']) {
+		$addInfo = "WWBOTA: " . $spot['wwbotaRef'] . " " . $spot['wwbotaName'];
+	}
 	$spotInfo = "last spotted on " . $spot['receivedDate']->toDateTime()->format("Y-m-d H:i:s") . "Z\nby " . $spot['spotter'] . " via " . $config['sources'][$spot['source']];
 	if (preg_match("/^SIMULATED/", @$spot['rawText']))
 		$spotInfo .= " (simulated)";
