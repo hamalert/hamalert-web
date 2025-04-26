@@ -9,7 +9,7 @@ $trigger = json_decode(file_get_contents("php://input"), true);
 refreshUser();
 
 // Validate
-$arrayConditions = ['summitRef', 'callsign', 'fullCallsign', 'notCallsign', 'notFullCallsign', 'prefix', 'notPrefix', 'spotter', 'notSpotter', 'spotterPrefix', 'mode', 'band', 'source', 'dxcc', 'callsignDxcc', 'spotterDxcc', 'cq', 'spotterCq', 'continent', 'spotterContinent', 'qsl', 'state', 'spotterState', 'summitAssociation', 'summitRegion', 'iotaGroupRef', 'wwffDivision', 'wwffRef', 'bandslot'];
+$arrayConditions = ['summitRef', 'callsign', 'fullCallsign', 'notCallsign', 'notFullCallsign', 'prefix', 'notPrefix', 'spotter', 'notSpotter', 'spotterPrefix', 'mode', 'band', 'source', 'dxcc', 'callsignDxcc', 'spotterDxcc', 'cq', 'spotterCq', 'continent', 'spotterContinent', 'qsl', 'state', 'spotterState', 'summitAssociation', 'summitRegion', 'iotaGroupRef', 'wwffDivision', 'wwffRef', 'wwbotaScheme', 'bandslot'];
 $arrayMaxEntries = 5000;
 $errors = [];
 if (!is_array($trigger['conditions']))
