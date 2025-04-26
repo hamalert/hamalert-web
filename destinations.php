@@ -451,14 +451,14 @@ $(function() {
 						</tr>
 						<tr>
 							<td><tt>rawText</tt></td>
-							<td>raw spot text, format depends on source</td>
+							<td>Raw spot text, format depends on source</td>
 							<td>
 								<pre style="width: 25em">DX de GW8IZR-#:  14062.0  EA8/HB9DQM/P   CW    17 dB  23 WPM  CQ      1147Z</pre>
 							</td>
 						</tr>
 						<tr>
 							<td><tt>title</tt></td>
-							<td>spot title</td>
+							<td>Spot title</td>
 							<td><strong>RBN spot EA8/HB9DQM/P (14.062 CW)</strong></td>
 						</tr>
 						<tr>
