@@ -203,6 +203,11 @@
 	as irrelevant alerts will only waste your time, and it helps HamAlert by not putting unnecessary load on its backend.</p>
 
 
+<h3>Is the RSL (UK callsigns) taken into consideration automatically?</h3>
+
+<p>No — HamAlert treats M0ABC, MM0ABC, MW0ABC etc. as different callsigns. If you want them all to match, you need to list them explicitly.</p>
+
+
 <h3>What does this cost?</h3>
 
 <p>Nothing! I intend to make HamAlert available for free to the amateur radio community for as long as I can afford the time (and money) to keep the system running and capable of handling the number of users. While I try my best to keep the system available and performing at all times, there are obviously no guarantees.</p>
