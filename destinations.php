@@ -468,7 +468,7 @@ $(function() {
 						</tr>
 						<tr>
 							<td><tt>source</tt></td>
-							<td>Spot source: 'rbn', 'sotawatch', 'cluster', 'pskreporter', 'pota' or 'wwff'</td>
+							<td>Spot source: 'rbn', 'sotawatch', 'cluster', 'pskreporter', 'pota', 'wwff' or 'wwbota'</td>
 							<td><strong>rbn</strong></td>
 						</tr>
 						<tr>
@@ -545,6 +545,11 @@ $(function() {
 							<td><tt>wwffRef</tt></td>
 							<td>Park reference *</td>
 							<td><strong>EAFF-0065</strong></td>
+						</tr>
+						<tr>
+							<td><tt>wwbotaScheme</tt></td>
+							<td>WWBOTA scheme *</td>
+							<td><strong>UKBOTA</strong></td>
 						</tr>
 					</tbody>
 				</table>
