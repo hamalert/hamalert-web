@@ -440,6 +440,12 @@ function deleteSpot($id) {
 	return $res->getDeletedCount();
 }
 
+function deleteAllSpots() {
+	global $db;
+	$res = $db->spots->deleteMany(['user_id' => $_SESSION['user']['_id']]);
+	return $res->getDeletedCount();
+}
+
 function resetBadgeCount() {
 	global $db;
 	
