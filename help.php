@@ -181,7 +181,7 @@
 
 <h3>How can I delete spots in the HamAlert app?</h3>
 
-<p>Swipe left to delete spots in the app. Spots will also disappear automatically after 24 hours.<p>
+<p>Swipe left to delete individual spots in the app. There is also a “Delete all” button at the bottom of the spots list. Finally, spots will disappear automatically after 24 hours.<p>
 
 
 <h3>I'm getting too many alerts, what can I do?</h3>

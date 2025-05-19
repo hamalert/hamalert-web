@@ -23,7 +23,7 @@ if ($_POST) {
 	$enableAlerts = $_POST['enableAlerts'];
 	$appTitleFormat = trim($_POST['appTitleFormat'] ?? "");
 	$appBodyFormat = trim($_POST['appBodyFormat'] ?? "");
-	$threemaId = strtoupper($_POST['threemaId'] ?? "");
+	$threemaId = strtoupper(trim($_POST['threemaId'] ?? ""));
 	$telnetPassword = $_POST['telnetPassword'];
 	$notificationUrl = $_POST['notificationUrl'];
 	$notificationMethod = $_POST['notificationMethod'];
@@ -52,7 +52,7 @@ if ($_POST) {
 	
 	// If a new Threema ID has been specified, we need to validate it.
 	$threemaMustValidate = false;
-	if (!$errors && $threemaId && $threemaId !== $_SESSION['user']['threemaId']) {
+	if (!$errors && $threemaId && $threemaId !== @$_SESSION['user']['threemaId']) {
 		$threemaMustValidate = true;
 		$validationCode = calcThreemaValidationCode($threemaId);
 		
