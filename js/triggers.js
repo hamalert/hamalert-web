@@ -245,7 +245,7 @@ var sources = {
 	'cluster': 'Cluster',
 	'pskreporter': 'PSK Reporter',
 	'pota': 'POTA',
-	'wwff': 'WWFFwatch'
+	'wwff': 'WWFF Spotline'
 };
 
 var modes = {

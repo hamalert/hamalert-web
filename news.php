@@ -8,6 +8,12 @@
 </div>
 */ ?>
 
+<h3>2025-06-01</h3>
+
+<ul>
+	<li>Switched to WWFF Spotline instead of WWFFwatch.</li>
+</ul>
+
 <h3>2025-03-09</h3>
 
 <ul>

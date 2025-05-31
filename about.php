@@ -6,7 +6,7 @@
 
 <p class="lead">HamAlert is a system that allows you to get notifications when a desired station appears on 
 	the <a href="https://dxwatch.com/">DX cluster</a>, the <a href="http://www.reversebeacon.net">Reverse Beacon Network</a>,
-	<a href="https://sotawatch.sota.org.uk">SOTAwatch</a>, <a href="https://pota.app">POTA</a>, <a href="https://wwff.co/dx-cluster/">WWFFwatch</a>, or <a href="https://pskreporter.info">PSK Reporter</a>.
+	<a href="https://sotawatch.sota.org.uk">SOTAwatch</a>, <a href="https://pota.app">POTA</a>, <a href="https://wwff.co/spotline/">WWFF Spotline</a>, or <a href="https://pskreporter.info">PSK Reporter</a>.
 	No need to keep checking these resources manually if you're looking for a certain callsign, DXCC, CQ zone, IOTA island, SOTA summit or WWFF/POTA reference.</p>
 		
 	<p>You can receive alerts via Push notifications, Threema, Telnet or URL GET/POST. You can also filter spots by various criteria, including:</p>
