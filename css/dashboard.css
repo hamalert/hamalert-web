@@ -15,7 +15,7 @@ h1 {
 	max-height: 75vh;
 }
 
-.myaccount a {
+.accountlink {
 	color: #333 !important;
 	font-weight: 500;
 }
