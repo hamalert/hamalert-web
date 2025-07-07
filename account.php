@@ -131,7 +131,7 @@ EOD;
 <fieldset>
 	<legend>Club Log</legend>
 
-	<?php if ($_SESSION['user']['clublog']['invalid']): ?>
+	<?php if (@$_SESSION['user']['clublog']['invalid']): ?>
 	<div class="alert alert-warning" role="alert">
 		The Club Log credentials that you have entered are invalid. Club Log updates have been disabled.
 		Please set your Club Log email and password again to restart them.
