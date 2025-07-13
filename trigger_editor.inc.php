@@ -206,8 +206,8 @@
 
 <script id="conditionTimeInputTmpl" type="text/x-jsrender">
 	<div class="form-inline">
-		<input type="time" class="form-control timeInput" id="{{:conditionName1}}" placeholder="00:00" value="{{>value1}}" onchange="updateConditionValue('{{:conditionName1}}', $(this).val())" /> –
-		<input type="time" class="form-control timeInput" id="{{:conditionName2}}" placeholder="00:00" value="{{>value2}}" onchange="updateConditionValue('{{:conditionName2}}', $(this).val())" />
+		<input type="text" class="form-control timeInput" id="{{:conditionName1}}" placeholder="00:00" value="{{>value1}}" onchange="updateConditionValue('{{:conditionName1}}', $(this).val())" /> –
+		<input type="text" class="form-control timeInput" id="{{:conditionName2}}" placeholder="00:00" value="{{>value2}}" onchange="updateConditionValue('{{:conditionName2}}', $(this).val())" />
 	</div>
 	{{if ~conditionHelpTexts[conditionName1]}}
 	<p class="help-block">{{:~conditionHelpTexts[conditionName1]}}</p>
