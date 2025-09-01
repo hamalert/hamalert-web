@@ -1,4 +1,5 @@
 <?php
+$pageTitle = 'Account';
 require_once("db.inc.php");
 
 refreshUser();

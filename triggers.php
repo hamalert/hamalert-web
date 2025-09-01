@@ -1,5 +1,7 @@
-<?php $initialScale = 0.6; include('settings_begin.inc.php') ?>
 <?php
+$initialScale = 0.6;
+$pageTitle = 'Triggers';
+include('settings_begin.inc.php');
 
 refreshUser();	// app tokens could have changed externally
 

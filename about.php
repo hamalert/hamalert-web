@@ -1,4 +1,7 @@
-<?php $loginOptional = true; include('settings_begin.inc.php') ?>
+<?php
+$loginOptional = true;
+$pageTitle = 'About';
+include('settings_begin.inc.php') ?>
 
 <h1 class="page-header">About HamAlert</h1>
 

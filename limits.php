@@ -1,4 +1,5 @@
 <?php
+$pageTitle = 'Limits';
 require_once("db.inc.php");
 
 $errors = [];

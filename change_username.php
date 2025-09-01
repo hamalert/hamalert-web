@@ -1,4 +1,5 @@
 <?php
+$pageTitle = 'Change username';
 require_once("db.inc.php");
 
 refreshUser();

@@ -1,5 +1,6 @@
 <?php
 $loginOptional = true;
+$pageTitle = 'Stats';
 require_once("db.inc.php");
 
 $stats = getStats();

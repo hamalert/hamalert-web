@@ -1,4 +1,7 @@
-<?php $loginOptional = true; include('settings_begin.inc.php') ?>
+<?php
+$loginOptional = true;
+$pageTitle = 'Privacy Policy';
+include('settings_begin.inc.php') ?>
 
 <h1 class="page-header">Privacy Policy</h1>
 

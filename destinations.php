@@ -6,6 +6,7 @@ use Threema\MsgApi\Connection;
 use Threema\MsgApi\ConnectionSettings;
 use Threema\MsgApi\Receiver;
 
+$pageTitle = 'Destinations';
 refreshUser();	// app tokens could have changed externally
 
 $enableAlerts = $_SESSION['user']['alerts'];

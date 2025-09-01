@@ -1,5 +1,6 @@
 <?php
 $loginOptional = true;
+$pageTitle = 'Register';
 if (@$_GET['hidenav']) {
 	$userScalable = 'no';
 }

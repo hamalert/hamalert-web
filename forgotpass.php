@@ -1,5 +1,6 @@
 <?php
 $loginOptional = true;
+$pageTitle = 'Forgot password';
 require_once("db.inc.php");
 
 $errors = [];

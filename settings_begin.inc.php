@@ -14,7 +14,7 @@ if (@$userScalable)
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="<?php echo $viewport ?>">
 
-	<title>HamAlert</title>
+	<title>HamAlert<?php if (@$pageTitle) echo " - $pageTitle"; ?></title>
 
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/bootstrap-dialog.min.css" rel="stylesheet">

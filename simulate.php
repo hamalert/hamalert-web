@@ -1,4 +1,6 @@
-<?php include('settings_begin.inc.php') ?>
+<?php
+$pageTitle = 'Simulate';
+include('settings_begin.inc.php') ?>
 
 <script src="js/triggers.js?v=<?php echo filemtime(__DIR__ . "/js/triggers.js") ?>" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
