@@ -260,7 +260,7 @@ var modes = {
 	'msk': 'MSK',
 	'ft8': 'FT8',
 	'ft4': 'FT4',
-	'js8call': 'JS8Call',
+	'js8': 'JS8',
 	'varac': 'VarAC',
 	'qra64': 'QRA64',
 	'iscat': 'ISCAT',
