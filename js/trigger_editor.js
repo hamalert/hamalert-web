@@ -1061,6 +1061,7 @@ function conditionBandslot(conditionName) {
 		clublogLastUpdate: clublogLastUpdate.toLocaleString(),
 		clublogModes: clublogModes,
 		clublogQslStatus: clublogQslStatus,
+		clublogDateFilters: clublogDateFilters,
 		numBandslots: currentTrigger.conditions[conditionName].length
 	});
 }
@@ -1121,6 +1122,8 @@ function updateClublog() {
 	currentTrigger.options.clublog.status = $("input[name=clublogStatus]:checked").map(function(){
 		return $(this).val();
 	}).get();
+	currentTrigger.options.clublog.date = parseInt($('input[name=clublogDateFilter]:checked').val());
+
 	updateBandslotModeWarning();
 }
 

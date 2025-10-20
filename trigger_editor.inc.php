@@ -302,6 +302,15 @@
 			{{/props}}
 		</div>
 		
+		<label>Date filter</label>
+		<div class="form-group">
+			{{props clublogDateFilters ~options=options}}
+			<label class="radio-inline">
+				<input type="radio" name="clublogDateFilter" onchange="updateClublog()" id="clublogDateFilter_{{>key}}" value="{{>key}}" {{if key == "0"}}checked="checked"{{/if}}> <label class="normal" for="clublogDateFilter_{{>key}}">{{>prop}}</label>
+			</label>
+			{{/props}}
+		</div>
+		
 		<hr />
 		<div>Current number of unworked band slots: <span class="label label-info" style="margin-right: 2em">{{:numBandslots}}</span>
 		Last update: <span class="label label-default">{{:clublogLastUpdate}}</span></div>
