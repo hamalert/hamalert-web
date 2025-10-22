@@ -824,7 +824,7 @@ function addCondition(conditionName) {
 		if (!currentTrigger.conditions['band'])
 			currentTrigger.conditions['band'] = "";
 		if (!currentTrigger.options.clublog)
-			currentTrigger.options.clublog = {modes: 'all', status: ['confirmed', 'worked', 'verified'], callsign: username};
+			currentTrigger.options.clublog = {modes: 'all', status: ['confirmed', 'worked', 'verified'], callsign: username, date: 0};
 	}
 	
 	if (conditionName == 'bandslot')

@@ -306,7 +306,7 @@
 		<div class="form-group">
 			{{props clublogDateFilters ~options=options}}
 			<label class="radio-inline">
-				<input type="radio" name="clublogDateFilter" onchange="updateClublog()" id="clublogDateFilter_{{>key}}" value="{{>key}}" {{if key == "0"}}checked="checked"{{/if}}> <label class="normal" for="clublogDateFilter_{{>key}}">{{>prop}}</label>
+				<input type="radio" name="clublogDateFilter" onchange="updateClublog()" id="clublogDateFilter_{{>key}}" value="{{>key}}" {{if ~options.clublog.date == key}}checked="checked"{{/if}}> <label class="normal" for="clublogDateFilter_{{>key}}">{{>prop}}</label>
 			</label>
 			{{/props}}
 		</div>
