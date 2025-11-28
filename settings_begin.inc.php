@@ -63,7 +63,11 @@ if (@$userScalable)
 					<li><a href="simulate">Simulate</a></li>
 					<?php endif; ?>
 					<li><a href="about">About</a></li>
+					<?php if (@$_SESSION['user']): ?>
+					<li><a href="https://forum.hamalert.org/session/sso?return_path=/">Forum</a></li>
+					<?php else: ?>
 					<li><a href="https://forum.hamalert.org/">Forum</a></li>
+					<?php endif; ?>
 					<li><a href="help">Help</a></li>
 					<li><a href="news">News</a></li>
 					<li><a href="/stats">Stats</a></li>
