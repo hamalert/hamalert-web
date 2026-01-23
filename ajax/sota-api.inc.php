@@ -77,7 +77,7 @@ function getUserIdForCallsign($callsign) {
 	$allusers = json_decode(file_get_contents("https://api-db2.sota.org.uk/rolls/activator/-1/0/all/all"), true);
 	$cache = [];
 	foreach ($allusers as $user) {
-		$cache[$user['Callsign']] = $user['UserID'];
+		$cache[strtoupper($user['Callsign'])] = $user['UserID'];
 	}
 
 	$tmpFile = $cacheFile . getmypid();
