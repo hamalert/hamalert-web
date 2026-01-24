@@ -29,6 +29,13 @@ if (@$_GET['status']) {
 $unworkedDxccs = [];
 $allDxccs = getAllDxccs();
 
+$options = [
+	'socket' => [
+		'bindto' => '0:0'
+	]
+];
+$context  = stream_context_create($options);
+
 $clubLogResponse = @file_get_contents("https://clublog.org/json_dxccchart.php?" . 
 	http_build_query([
 	'call' => $_GET['call'],
@@ -37,7 +44,7 @@ $clubLogResponse = @file_get_contents("https://clublog.org/json_dxccchart.php?" 
 	'api' => $config['clublog']['apikey'],
 	'email' => $_SESSION['user']['clublog']['email'],
 	'password' => $_SESSION['user']['clublog']['password']
-]));
+]), false, $context);
 if (!$clubLogResponse) {
 	bailout("Cannot get DXCC matrix from Club Log (check email and password in account settings).");
 }
