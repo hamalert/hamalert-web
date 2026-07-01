@@ -11,7 +11,7 @@ $inputSpot = $req['spot'];
 $callsignRegex = "/^[A-Z0-9\/-]{3,16}$/i";	// allow dash for spotter calls
 $modeRegex = "/^[a-z0-9]{2,8}$/";
 $sourceRegex = "/^[a-z]{2,32}$/";
-$frequencyRegex = "/^\d+\.\d+$/";
+$frequencyRegex = "/^\d+\.?(?:\d+)?$/";
 $summitRefRegex = "/^[a-zA-Z0-9]{1,8}\/[a-zA-Z]{2}\-(([0-9][0-9][1-9])|([0-9][1-9][0])|([1-9][0-9][0]))$/i";
 
 $errors = [];
