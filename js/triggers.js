@@ -403,10 +403,13 @@ var states = {
 	"CA_NB": "New Brunswick",
 	"CA_NL": "Newfoundland and Labrador",
 	"CA_NS": "Nova Scotia",
+	"CA_NT": "Northwest Territories",
+	"CA_NU": "Nunavut",
 	"CA_ON": "Ontario",
 	"CA_PE": "Prince Edward Island",
 	"CA_QC": "Quebec",
-	"CA_SK": "Saskatchewan"
+	"CA_SK": "Saskatchewan",
+	"CA_YT": "Yukon"
 };
 
 var statesShort = {
@@ -467,10 +470,13 @@ var statesShort = {
 	"CA_NB": "NB",
 	"CA_NL": "NL",
 	"CA_NS": "NS",
+	"CA_NT": "NT",
+	"CA_NU": "NU",
 	"CA_ON": "ON",
 	"CA_PE": "PE",
 	"CA_QC": "QC",
-	"CA_SK": "SK"
+	"CA_SK": "SK",
+	"CA_YT": "YT"
 };
 
 var conditionValueMaps = {
