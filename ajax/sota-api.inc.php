@@ -3,12 +3,24 @@
 $cacheFile = "/tmp/activator_userids_" . posix_getuid() . ".json";
 $cacheUpdated = false;
 
+function sotaApiFetchJson($url) {
+	$contents = @file_get_contents($url);
+	if ($contents === false) {
+		sleep(5);
+		$contents = file_get_contents($url);
+	}
+	if ($contents === false) {
+		return null;
+	}
+	return json_decode($contents, true);
+}
+
 function getActivationsForCallsign($callsign) {
 	$userId = getUserIdForCallsign($callsign);
 	if (!$userId) {
 		return null;
 	}
-	$activations = json_decode(file_get_contents("https://api-db2.sota.org.uk/logs/activator/$userId/99999/1"), true);
+	$activations = sotaApiFetchJson("https://api-db2.sota.org.uk/logs/activator/$userId/99999/1");
 	if (!$activations) {
 		return [];
 	}
@@ -34,7 +46,7 @@ function getChasesForCallsign($callsign) {
 	if (!$userId) {
 		return null;
 	}
-	return json_decode(file_get_contents("https://api-db2.sota.org.uk/logs/chaser/$userId/99999/1"), true);
+	return sotaApiFetchJson("https://api-db2.sota.org.uk/logs/chaser/$userId/99999/1");
 }
 
 function getCompleteCandidatesForCallsign($callsign) {
@@ -74,7 +86,7 @@ function getUserIdForCallsign($callsign) {
 	}
 
 	// Not in cache; load cache again
-	$allusers = json_decode(file_get_contents("https://api-db2.sota.org.uk/rolls/activator/-1/0/all/all"), true);
+	$allusers = sotaApiFetchJson("https://api-db2.sota.org.uk/rolls/activator/-1/0/all/all");
 	$cache = [];
 	foreach ($allusers as $user) {
 		$cache[strtoupper($user['Callsign'])] = $user['UserID'];
