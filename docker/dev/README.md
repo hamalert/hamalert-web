@@ -28,20 +28,24 @@ run this day-to-day — see that repo for the full stack.
 
 ## Running standalone
 
-To build and run just this image, against a MongoDB you already have running
-and reachable:
+See "Running locally" in the top-level README.md for the full sequence (network, MongoDB
+container, build, run, seed user). The essentials:
 
 ```sh
 docker build -t hamalert-web-dev -f Dockerfile.dev .
 
 docker run -d --name hamalert-dev-web \
+	--network hamalert-dev \
 	-p 127.0.0.1:8081:80 \
 	--add-host=host.docker.internal:host-gateway \
 	-v "$PWD":/var/www/html \
-	-e MONGODB_URI=mongodb://host.docker.internal:27017/hamalert \
+	-v hamalert-dev-web-vendor:/var/www/html/vendor \
+	-e MONGODB_URI=mongodb://hamalert-dev-mongo:27017/hamalert \
 	-e SELF_URL=http://localhost:8081 \
 	-e SIMULATE_SPOT_URL=http://host.docker.internal:1983/sendSpot \
 	hamalert-web-dev
+
+docker exec hamalert-dev-web php tools/seedLocalUser.php
 ```
 
 Then open http://localhost:8081/login.
@@ -56,7 +60,6 @@ your checkout to have it regenerated on the next container start):
 | `SELF_URL`           | `http://localhost:8081`                           | `self_url`                                            |
 | `SIMULATE_SPOT_URL`  | `http://host.docker.internal:1983/sendSpot`       | `simulate_spot_url`, `simulate_spot_url_test`         |
 
-`composer install` and `config.inc.php` generation write into your working
-copy (because the source is bind-mounted) — both `vendor/` (beyond the parts
-already committed) and `config.inc.php` are gitignored, so this doesn't dirty
-`git status`.
+`config.inc.php` is generated into your working copy (the source is bind-mounted); it is
+gitignored. Composer's packages go into the `hamalert-dev-web-vendor` volume mounted over
+`vendor/`, so they are installed once and never touch the checkout.
