@@ -7,7 +7,7 @@
 # rebuild. docker/dev/entrypoint.sh takes care of the one-time setup that
 # then needs to happen inside the mounted checkout (composer install,
 # generating config.inc.php).
-FROM php:8.3-apache
+FROM docker.io/library/php:8.3-apache
 
 # --- System packages --------------------------------------------------------
 # $PHPIZE_DEPS is defined by the base php image (autoconf, gcc, make, ...)
@@ -55,7 +55,7 @@ RUN docker-php-ext-configure gd --with-freetype \
 # --- Composer -----------------------------------------------------------------
 # Copy the composer binary from the official composer image rather than
 # installing it via a curl|sh installer script.
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=docker.io/library/composer:2 /usr/bin/composer /usr/bin/composer
 
 # --- Apache -------------------------------------------------------------------
 # mod_rewrite: needed both for ajax/.htaccess and for the root-level
