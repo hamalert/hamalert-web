@@ -60,6 +60,7 @@ if (@$userScalable)
 					<li><a href="triggers">Triggers</a></li>
 					<li><a href="limits">Limits</a></li>
 					<li><a href="destinations">Destinations</a></li>
+					<li><a href="alerts">Alerts</a></li>
 					<li><a href="simulate">Simulate</a></li>
 					<?php endif; ?>
 					<li><a href="about">About</a></li>
