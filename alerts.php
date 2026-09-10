@@ -1,95 +1,127 @@
 <?php
 $pageTitle = 'Alerts';
-require_once("db.inc.php");
-
-$spots = getRecentSpots(86400, 100);
-
-function formatTriggerComments($comments) {
-	if (!$comments) {
-		return '';
-	}
-	if (is_array($comments)) {
-		return implode(', ', $comments);
-	}
-	return $comments;
-}
-
-function formatSpotDetails($spot) {
-	if (isset($spot['frequency'])) {
-		$details = $spot['frequency'] . " MHz";
-		if (@$spot['mode']) {
-			$details .= " " . strtoupper($spot['mode']);
-		}
-		if (@$spot['summitRef']) {
-			$details .= ", SOTA " . $spot['summitRef'];
-		}
-		if (@$spot['wwffRef']) {
-			$details .= ", WWFF " . $spot['wwffRef'];
-		}
-		if (@$spot['iotaGroupRef']) {
-			$details .= ", IOTA " . $spot['iotaGroupRef'];
-		}
-	} else {
-		// D-STAR presence spot: no frequency
-		if (@$spot['dvEvent'] == 'linked') {
-			$details = "Linked " . @$spot['dvNode'] . " to " . @$spot['dvReflector'];
-		} else if (@$spot['dvReflector']) {
-			$details = "Active on " . $spot['dvReflector'] . " via " . @$spot['dvNode'];
-		} else {
-			$details = "Active on " . @$spot['dvNode'];
-		}
-		if (@$spot['comment']) {
-			$details .= ' "' . $spot['comment'] . '"';
-		}
-		if (isset($spot['dvDuration'])) {
-			$details .= " (" . number_format($spot['dvDuration'], 1) . " s)";
-		}
-	}
-
-	$html = htmlspecialchars($details);
-	if (@$spot['rawText']) {
-		$html .= '<br /><small class="text-muted">' . htmlspecialchars($spot['rawText']) . '</small>';
-	}
-	return $html;
-}
+require_once("alerts.inc.php");
 
 include('settings_begin.inc.php');
 ?>
-<h1 class="page-header">Alerts <small><a href="alerts">refresh</a></small></h1>
+<h1 class="page-header">Alerts</h1>
 
 <p>The last 100 alerts sent to you in the last 24 hours, across all actions.</p>
 
-<?php if (!$spots): ?>
-<div class="alert alert-info" role="alert">
-	No alerts in the last 24 hours. Alerts appear here whenever one of your triggers matches a spot, whatever action it uses.
+<p>
+	<button type="button" class="btn btn-default btn-sm" id="alertsPauseBtn" onclick="toggleAlertsRefresh()"><span class="glyphicon glyphicon-pause" aria-hidden="true"></span> Pause</button>
+	<button type="button" class="btn btn-default btn-sm" onclick="refreshAlerts()"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Refresh now</button>
+	<small class="text-muted" id="alertsStatus"></small>
+</p>
+
+<div id="alertsTable">
+<?php renderAlertsTable() ?>
 </div>
-<?php else: ?>
-<div class="table-responsive">
-<table class="table table-striped">
-	<thead>
-		<tr>
-			<th>Time</th>
-			<th>Source</th>
-			<th>Callsign</th>
-			<th>Details</th>
-			<th>Actions</th>
-			<th>Trigger comment</th>
-		</tr>
-	</thead>
-	<tbody>
-		<?php foreach ($spots as $spot): ?>
-		<tr>
-			<td><?php echo htmlspecialchars($spot['receivedDate']->toDateTime()->format("Y-m-d H:i:s") . "Z") ?></td>
-			<td><?php echo htmlspecialchars($config['sources'][@$spot['source']] ?? @$spot['source']) ?></td>
-			<td><?php echo htmlspecialchars(@$spot['fullCallsign']) ?></td>
-			<td><?php echo formatSpotDetails($spot) ?></td>
-			<td><?php echo htmlspecialchars(implode(', ', array_diff(@$spot['actions'] ?: [], ['myspot']))) ?></td>
-			<td><?php echo htmlspecialchars(formatTriggerComments(@$spot['triggerComments'])) ?></td>
-		</tr>
-		<?php endforeach; ?>
-	</tbody>
-</table>
-</div>
-<?php endif; ?>
+
+<script type="text/javascript">
+var refreshInterval = 15000;	// milliseconds between auto-refreshes
+var alertsTimer = null;
+var alertsPaused = false;
+var sessionExpired = false;
+
+function loadPausedState() {
+	try { return localStorage.getItem('alertsPaused') === '1'; } catch (e) { return false; }
+}
+
+function savePausedState(paused) {
+	try { localStorage.setItem('alertsPaused', paused ? '1' : '0'); } catch (e) { /* unavailable - ignore */ }
+}
+
+function setStatus(text, isWarning) {
+	$('#alertsStatus').text(text)
+		.toggleClass('text-danger', !!isWarning)
+		.toggleClass('text-muted', !isWarning);
+}
+
+function updateStatusNormal() {
+	var now = new Date().toISOString().substr(11, 8) + 'Z';
+	if (alertsPaused) {
+		setStatus('Updated ' + now + ' · Paused', false);
+	} else {
+		setStatus('Updated ' + now + ' · refreshing every ' + Math.round(refreshInterval / 1000) + ' s', false);
+	}
+}
+
+function expireSession() {
+	sessionExpired = true;
+	stopTimer();
+	setStatus('Session expired, please reload', true);
+}
+
+function refreshAlerts() {
+	if (sessionExpired) {
+		return;
+	}
+	$.get('ajax/alerts')
+		.done(function(html) {
+			if (typeof html === 'string' && html.indexOf('id="username"') !== -1) {
+				return expireSession();
+			}
+			$('#alertsTable').html(html);
+			updateStatusNormal();
+		})
+		.fail(function(jqxhr) {
+			if (jqxhr.status == 401) {
+				return expireSession();
+			}
+			setStatus('Refresh failed, retrying', true);
+		});
+}
+
+function startTimer() {
+	stopTimer();
+	if (!sessionExpired) {
+		alertsTimer = setInterval(refreshAlerts, refreshInterval);
+	}
+}
+
+function stopTimer() {
+	if (alertsTimer) {
+		clearInterval(alertsTimer);
+		alertsTimer = null;
+	}
+}
+
+function applyPausedState() {
+	if (alertsPaused) {
+		$('#alertsPauseBtn').html('<span class="glyphicon glyphicon-play" aria-hidden="true"></span> Resume');
+		stopTimer();
+	} else {
+		$('#alertsPauseBtn').html('<span class="glyphicon glyphicon-pause" aria-hidden="true"></span> Pause');
+		if (document.visibilityState !== 'hidden') {
+			startTimer();
+		}
+	}
+	updateStatusNormal();
+}
+
+function toggleAlertsRefresh() {
+	alertsPaused = !alertsPaused;
+	savePausedState(alertsPaused);
+	applyPausedState();
+}
+
+$(document).on('visibilitychange', function() {
+	if (sessionExpired) {
+		return;
+	}
+	if (document.visibilityState === 'hidden') {
+		stopTimer();
+	} else if (!alertsPaused) {
+		refreshAlerts();
+		startTimer();
+	}
+});
+
+$(function() {
+	alertsPaused = loadPausedState();
+	applyPausedState();
+});
+</script>
 
 <?php include('settings_end.inc.php') ?>
