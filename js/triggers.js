@@ -35,7 +35,10 @@ var conditionLabels = {
 	'summitRefs': 'Summit reference list',
 	'wwffDivision': 'Park division',
 	'wwffRef': 'Park reference',
-	'wwffRefs': 'Park reference list'
+	'wwffRefs': 'Park reference list',
+	'dvEvent': 'D-STAR event',
+	'dvNode': 'D-STAR repeater/node',
+	'dvReflector': 'D-STAR reflector'
 };
 
 var conditionsOrder = [
@@ -48,6 +51,7 @@ var conditionsOrder = [
 	'iotaGroupRef',
 	'summitAssociation', 'summitRegion', 'summitRef', 'summitRefs', 'summitPointsFrom', 'summitActivationsFrom',
 	'wwffDivision', 'wwffRef', 'wwffRefs',
+	'dvEvent', 'dvNode', 'dvReflector',
 	'notCallsign', 'notFullCallsign', 'notSpotter', 'notPrefix'
 ];
 
@@ -61,6 +65,7 @@ var conditionsGroups = [
 	{title: 'IOTA', conditions: ['iotaGroupRef']},
 	{title: 'SOTA', conditions: ['summitAssociation', 'summitRegion', 'summitRef', 'summitRefs', 'summitPointsFrom', 'summitActivationsFrom']},
 	{title: 'WWFF/POTA', conditions: ['wwffDivision', 'wwffRef', 'wwffRefs']},
+	{title: 'D-STAR', conditions: ['dvEvent', 'dvNode', 'dvReflector']},
 	{title: 'Callsign exclusions', conditions: ['notCallsign', 'notFullCallsign', 'notSpotter', 'notPrefix']}
 ];
 
@@ -237,6 +242,20 @@ var arrayConditions = {
 		maxDisplaySmall: 2,
 		suffix: 'parks'
 	},
+	'dvEvent': {
+		maxDisplay: 2,
+		suffix: 'events'
+	},
+	'dvNode': {
+		maxDisplay: 3,
+		maxDisplaySmall: 3,
+		suffix: 'nodes'
+	},
+	'dvReflector': {
+		maxDisplay: 3,
+		maxDisplaySmall: 3,
+		suffix: 'reflectors'
+	}
 };
 
 var sources = {
@@ -245,7 +264,8 @@ var sources = {
 	'cluster': 'Cluster',
 	'pskreporter': 'PSK Reporter',
 	'pota': 'POTA',
-	'wwff': 'WWFF Spotline'
+	'wwff': 'WWFF Spotline',
+	'dstar': 'D-STAR'
 };
 
 var modes = {
@@ -271,7 +291,8 @@ var modes = {
 	'sstv': 'SSTV',
 	'olivia': 'Olivia',
 	'fst4': 'FST4',
-	'data': 'DATA'
+	'data': 'DATA',
+	'dstar': 'D-STAR'
 };
 
 var continents = {
@@ -478,9 +499,15 @@ var statesShort = {
 	"CA_YT": "YT"
 };
 
+var dvEvents = {
+	'active': 'Active (voice heard)',
+	'linked': 'Linked (link command sent)'
+};
+
 var conditionValueMaps = {
 	'source': sources,
 	'mode': modes,
+	'dvEvent': dvEvents,
 	'continent': continents,
 	'spotterContinent': continents,
 	'band': bands,
@@ -567,7 +594,12 @@ var conditionHelpTexts = {
 	'qsl': '<small>LoTW: callsign has uploaded QSOs within the last 12 months according to <a href="https://lotw.arrl.org/lotw-user-activity.csv" target="_blank">this list</a>.<br />eQSL: callsign is on <a href="https://www.eqsl.cc/qslcard/DownloadedFiles/AGMemberList.txt" target="_blank">AG member list</a>.</small>',
 	'state': '<small>Data obtained from FCC ULS and Government of Canada databases, updated weekly. Park state from POTA spots may override the callsign\'s home state.</small>',
 	'spotterState': '<small>Data obtained from FCC ULS and Government of Canada database, updated weekly.</small>',
-	'wwffRef': '<small>If you want to match any park reference in the division, then please don\'t “Select All” – instead, simply remove the “Park reference” condition and leave only the division.</small>'
+	'wwffRef': '<small>If you want to match any park reference in the division, then please don\'t “Select All” – instead, simply remove the “Park reference” condition and leave only the division.</small>',
+	'dvEvent': '<em>Active</em>: a voice transmission from the callsign was heard on the repeater/node (and reflector, if linked). <em>Linked</em>: the callsign sent a link command to a reflector by radio.<br /><small>D-STAR alerts are presence alerts based on the QuadNet and ircDDB “last heard” logs; see the <a href="help#dstar">Help</a> page.</small>',
+	'dvNode': 'The D-STAR repeater or hotspot callsign, optionally with the module letter after a hyphen.<br />Examples: W4HFH-C (module C only), W4HFH (any module).',
+	'dvNode_array': 'The D-STAR repeater or hotspot callsigns, optionally with the module letter after a hyphen, separated with commas, spaces or line breaks.<br />Examples: W4HFH-C (module C only), W4HFH (any module).',
+	'dvReflector': 'The D-STAR reflector, optionally with the module letter after a hyphen.<br />Examples: REF030-C (module C only), REF030 (any module). XRF, DCS and XLX reflectors work the same way.',
+	'dvReflector_array': 'The D-STAR reflectors, optionally with the module letter after a hyphen, separated with commas, spaces or line breaks.<br />Examples: REF030-C (module C only), REF030 (any module).'
 };
 
 var daysOfWeek = [

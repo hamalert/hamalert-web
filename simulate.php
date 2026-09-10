@@ -39,10 +39,14 @@ include('settings_begin.inc.php') ?>
 			mode: $('#mode').val(),
 			source: $('#source').val(),
 			spotter: $('#spotter').val(),
-			comment: $('#comment').val()
+			comment: $('#comment').val(),
+			dvEvent: $('#dvEvent').val(),
+			dvNode: $('#dvNode').val(),
+			dvReflector: $('#dvReflector').val()
 		};
 		
-		if (!spot.fullCallsign || !spot.frequency || !spot.mode || !spot.source || !spot.spotter) {
+		// Frequency is optional for D-STAR spots
+		if (!spot.fullCallsign || (spot.source == 'dstar' ? !spot.dvNode : !spot.frequency) || !spot.mode || !spot.source || !spot.spotter) {
 			$('#fillInFieldsAlert').show();
 			return;
 		}
@@ -133,6 +137,7 @@ input::-webkit-inner-spin-button {
 						<input type="number" step="any" class="form-control" id="frequency" placeholder="14.060" />
 						<div class="input-group-addon">MHz</div>
 					</div>
+					<p class="help-block">optional for D-STAR spots</p>
 				</td>
 			</tr>
 			<tr>
@@ -156,6 +161,27 @@ input::-webkit-inner-spin-button {
 				<th>Comment</th>
 				<td><input type="text" class="form-control" id="comment" placeholder="" />
 				<p class="help-block">The comment field is parsed for WWFF, POTA and SOTA references.</p></td>
+			</tr>
+			<tr>
+				<th>D-STAR event</th>
+				<td>
+					<select id="dvEvent" class="selectpicker" data-width="auto">
+						<option value=""></option>
+						<option value="active">active</option>
+						<option value="linked">linked</option>
+					</select>
+					<p class="help-block">optional, only for source D-STAR</p>
+				</td>
+			</tr>
+			<tr>
+				<th>D-STAR node</th>
+				<td><input type="text" class="form-control" id="dvNode" placeholder="W4HFH-C" style="text-transform: uppercase" />
+				<p class="help-block">required for source D-STAR (repeater/hotspot callsign and module)</p></td>
+			</tr>
+			<tr>
+				<th>D-STAR reflector</th>
+				<td><input type="text" class="form-control" id="dvReflector" placeholder="REF030-C" style="text-transform: uppercase" />
+				<p class="help-block">optional, only for source D-STAR</p></td>
 			</tr>
 		</tbody>
 	</table>

@@ -51,7 +51,8 @@ $config = array(
 		'sotawatch' => 'SOTAwatch',
 		'pskreporter' => 'PSK Reporter',
 		'pota' => 'POTA',
-		'wwff' => 'WWFFwatch'
+		'wwff' => 'WWFFwatch',
+		'dstar' => 'D-STAR'
 	],
 
 	'actions' => [

@@ -44,10 +44,28 @@ $spot = getMySpotForCallsign($callsign, $hours * 3600);
 if (!$spot) {
 	$im = makeMySpotImage($callsign, "off air", $text, "last updated on " . date("Y-m-d H:i:s") . "Z", @$_GET['dark'], true, @$_GET['hr']);
 } else {
-	$freqMode = $spot['frequency'] . " MHz";
 	$addInfo = null;
-	if (@$spot['mode']) {
-		$freqMode .= " (" . strtoupper($spot['mode']) . ")";
+	if (isset($spot['frequency'])) {
+		$freqMode = $spot['frequency'] . " MHz";
+		if (@$spot['mode']) {
+			$freqMode .= " (" . strtoupper($spot['mode']) . ")";
+		}
+	} else if ($spot['source'] == 'dstar') {
+		// D-STAR presence spot: no frequency
+		$freqMode = "D-STAR";
+		if (@$spot['dvNode'] && @$spot['dvReflector']) {
+			if (@$spot['dvEvent'] == 'linked') {
+				$addInfo = "linked " . $spot['dvNode'] . " to " . $spot['dvReflector'];
+			} else {
+				$addInfo = "on " . $spot['dvReflector'] . " via " . $spot['dvNode'];
+			}
+		} else if (@$spot['dvNode']) {
+			$addInfo = "on " . $spot['dvNode'];
+		} else if (@$spot['dvReflector']) {
+			$addInfo = "on " . $spot['dvReflector'];
+		}
+	} else {
+		$freqMode = @$spot['mode'] ? strtoupper($spot['mode']) : "";
 	}
 	if (@$spot['summitRef']) {
 		$addInfo = "SOTA: " . $spot['summitRef'] . " " . $spot['summitName'];
@@ -58,7 +76,8 @@ if (!$spot) {
 			$addInfo = "WWFF: " . $spot['wwffRef'] . " " . $spot['wwffName'];
 		}
 	}
-	$spotInfo = "last spotted on " . $spot['receivedDate']->toDateTime()->format("Y-m-d H:i:s") . "Z\nby " . $spot['spotter'] . " via " . $config['sources'][$spot['source']];
+	$sourceName = $config['sources'][$spot['source']] ?? $spot['source'];
+	$spotInfo = "last spotted on " . $spot['receivedDate']->toDateTime()->format("Y-m-d H:i:s") . "Z\n" . (@$spot['spotter'] ? "by " . $spot['spotter'] . " " : "") . "via " . $sourceName;
 	if (preg_match("/^SIMULATED/", @$spot['rawText']))
 		$spotInfo .= " (simulated)";
 	$im = makeMySpotImage($spot['fullCallsign'], $freqMode, $addInfo, $spotInfo, @$_GET['dark'], false, @$_GET['hr']);

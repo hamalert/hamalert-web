@@ -56,6 +56,29 @@ include('settings_begin.inc.php') ?>
 		(i.e. spots that occurred before a trigger was set up).</li>
 	<li>For PSK reporter spots, a quorum of three different spotters must be reached for the same combination of callsign/band/mode until spots are processed (spots are held back until the quorum is reached). This is to prevent erroneous alerts due to spotters with a misconfigured band.</li>
 	<li>Note that HamAlert ignores SOTAwatch spots that contain the word “test” or “testing”.</li>
+	<li>D-STAR alerts are only generated for voice transmissions and reflector link commands that appear in the QuadNet/ircDDB “last heard” logs
+		(at most one alert per callsign/node/reflector/event within 15 minutes). See <a href="#dstar">How do D-STAR alerts work?</a> for details.</li>
+</ul>
+
+
+<a name="dstar"></a><h3>How do D-STAR alerts work?</h3>
+
+<p>D-STAR alerts (source “D-STAR”) are <em>presence</em> alerts rather than DX spots: they are generated from the “last heard” logs of the
+	<a href="https://openquad.net">QuadNet</a> and <a href="https://ircddb.net">ircDDB</a> networks, and tell you that a station has become active on,
+	or linked to, a D-STAR repeater module or reflector module. Please note the following:</p>
+
+<ul>
+	<li>Event “<strong>active</strong>” means that a voice transmission from the station was heard on a repeater module (or on a reflector module,
+		if the repeater was linked to a reflector at the time).</li>
+	<li>Event “<strong>linked</strong>” means that the station sent a link command to a reflector by radio (e.g. “REF030CL”).
+		Hotspots that link to a reflector automatically at boot, or links made from the Pi-Star web page, are not seen by the network and do not generate alerts.</li>
+	<li>Info, echo and unlink commands never generate alerts.</li>
+	<li>Only one alert is generated per callsign, node, reflector and event within 15 minutes.</li>
+	<li>Stations on the ircddb.net network only appear if they have sent the “VIS ON” command at least once.</li>
+	<li>D-STAR spots have no frequency and no band, so band conditions and limits per band do not apply to them.</li>
+	<li>Use the “D-STAR repeater/node” and “D-STAR reflector” trigger conditions to restrict alerts to certain repeaters/hotspots or reflectors.
+		Values may be entered with or without the module letter, e.g. “REF030” matches “REF030-A”, “REF030-B”, “REF030-C” etc.,
+		whereas “REF030-C” only matches that module.</li>
 </ul>
 
 

@@ -11,6 +11,15 @@ include('settings_begin.inc.php') ?>
 </div>
 */ ?>
 
+<h3>2026-09-10</h3>
+
+<ul>
+	<li>D-STAR presence alerts: HamAlert now generates spots when a station becomes active on, or links to, a D-STAR repeater module or reflector module
+		(based on the QuadNet and ircDDB “last heard” logs). Use the new source “D-STAR” and the “D-STAR event”, “D-STAR repeater/node” and “D-STAR reflector” trigger conditions.</li>
+	<li>D-STAR spots have no frequency or band, so band conditions and limits do not apply to them. See the <a href="help#dstar">help page</a> for details.</li>
+	<li>New notification parameters <tt>dvEvent</tt>, <tt>dvNode</tt>, <tt>dvReflector</tt>, <tt>dvSuffix</tt> and <tt>dvDuration</tt> are available for URL notifications.</li>
+</ul>
+
 <h3>2025-06-01</h3>
 
 <ul>
