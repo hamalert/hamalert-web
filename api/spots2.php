@@ -15,7 +15,7 @@ $spots = getSpots($_REQUEST['maxAge'], $_REQUEST['limit'], 'app');
 foreach ($spots as &$spot) {
 	$spot['receivedDate'] = $spot['receivedDate']->toDateTime()->format(DateTime::ISO8601);
 
-	// TEMP fix frequency: force number (D-STAR spots have no frequency)
+	// TEMP fix frequency: force number (frequency may be absent, e.g. some D-STAR spots)
 	if (isset($spot['frequency'])) {
 		$spot['frequency'] = (float)$spot['frequency'];
 	}

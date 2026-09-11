@@ -45,14 +45,14 @@ if (!$spot) {
 	$im = makeMySpotImage($callsign, "off air", $text, "last updated on " . date("Y-m-d H:i:s") . "Z", @$_GET['dark'], true, @$_GET['hr']);
 } else {
 	$addInfo = null;
-	if (isset($spot['frequency'])) {
-		$freqMode = $spot['frequency'] . " MHz";
-		if (@$spot['mode']) {
-			$freqMode .= " (" . strtoupper($spot['mode']) . ")";
+	if ($spot['source'] == 'dstar') {
+		if (isset($spot['frequency'])) {
+			$freqMode = $spot['frequency'] . " MHz (DSTAR)";
+		} else if (@$spot['band'] && $spot['band'] != 'unknown') {
+			$freqMode = $spot['band'] . " (DSTAR)";
+		} else {
+			$freqMode = "band unknown (DSTAR)";
 		}
-	} else if ($spot['source'] == 'dstar') {
-		// D-STAR presence spot: no frequency
-		$freqMode = "D-STAR";
 		if (@$spot['dvNode'] && @$spot['dvReflector']) {
 			if (@$spot['dvEvent'] == 'linked') {
 				$addInfo = "linked " . $spot['dvNode'] . " to " . $spot['dvReflector'];
@@ -63,6 +63,11 @@ if (!$spot) {
 			$addInfo = "on " . $spot['dvNode'];
 		} else if (@$spot['dvReflector']) {
 			$addInfo = "on " . $spot['dvReflector'];
+		}
+	} else if (isset($spot['frequency'])) {
+		$freqMode = $spot['frequency'] . " MHz";
+		if (@$spot['mode']) {
+			$freqMode .= " (" . strtoupper($spot['mode']) . ")";
 		}
 	} else {
 		$freqMode = @$spot['mode'] ? strtoupper($spot['mode']) : "";

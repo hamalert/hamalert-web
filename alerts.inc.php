@@ -12,7 +12,28 @@ function formatTriggerComments($comments) {
 }
 
 function formatSpotDetails($spot) {
-	if (isset($spot['frequency'])) {
+	if ($spot['source'] == 'dstar') {
+		if (isset($spot['frequency'])) {
+			$details = $spot['frequency'] . " MHz, ";
+		} else if (@$spot['band'] && $spot['band'] != 'unknown') {
+			$details = $spot['band'] . ", ";
+		} else {
+			$details = "band unknown, ";
+		}
+		if (@$spot['dvEvent'] == 'linked') {
+			$details .= "Linked " . @$spot['dvNode'] . " to " . @$spot['dvReflector'];
+		} else if (@$spot['dvReflector']) {
+			$details .= "Active on " . $spot['dvReflector'] . " via " . @$spot['dvNode'];
+		} else {
+			$details .= "Active on " . @$spot['dvNode'];
+		}
+		if (@$spot['comment']) {
+			$details .= ' "' . $spot['comment'] . '"';
+		}
+		if (isset($spot['dvDuration'])) {
+			$details .= " (" . number_format($spot['dvDuration'], 1) . " s)";
+		}
+	} else if (isset($spot['frequency'])) {
 		$details = $spot['frequency'] . " MHz";
 		if (@$spot['mode']) {
 			$details .= " " . strtoupper($spot['mode']);
@@ -27,20 +48,7 @@ function formatSpotDetails($spot) {
 			$details .= ", IOTA " . $spot['iotaGroupRef'];
 		}
 	} else {
-		// D-STAR presence spot: no frequency
-		if (@$spot['dvEvent'] == 'linked') {
-			$details = "Linked " . @$spot['dvNode'] . " to " . @$spot['dvReflector'];
-		} else if (@$spot['dvReflector']) {
-			$details = "Active on " . $spot['dvReflector'] . " via " . @$spot['dvNode'];
-		} else {
-			$details = "Active on " . @$spot['dvNode'];
-		}
-		if (@$spot['comment']) {
-			$details .= ' "' . $spot['comment'] . '"';
-		}
-		if (isset($spot['dvDuration'])) {
-			$details .= " (" . number_format($spot['dvDuration'], 1) . " s)";
-		}
+		$details = @$spot['mode'] ? strtoupper($spot['mode']) : "";
 	}
 
 	$html = htmlspecialchars($details);

@@ -75,7 +75,7 @@ include('settings_begin.inc.php') ?>
 	<li>Info, echo and unlink commands never generate alerts.</li>
 	<li>Only one alert is generated per callsign, node, reflector and event within 15 minutes.</li>
 	<li>Stations on the ircddb.net network only appear if they have sent the “VIS ON” command at least once.</li>
-	<li>D-STAR spots have no frequency and no band, so band conditions and limits per band do not apply to them.</li>
+	<li>D-STAR spots include the repeater's registered frequency and band whenever the node is listed in the QuadNet/ircDDB repeater lists, so band conditions and limits per band apply to them as usual. If the node is not listed, the band is guessed from the module letter (and frequency is left out); if even that fails, the band is reported as “unknown”.</li>
 	<li>Use the “D-STAR repeater/node” and “D-STAR reflector” trigger conditions to restrict alerts to certain repeaters/hotspots or reflectors.
 		Values may be entered with or without the module letter, e.g. “REF030” matches “REF030-A”, “REF030-B”, “REF030-C” etc.,
 		whereas “REF030-C” only matches that module.</li>

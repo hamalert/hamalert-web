@@ -137,7 +137,7 @@ input::-webkit-inner-spin-button {
 						<input type="number" step="any" class="form-control" id="frequency" placeholder="14.060" />
 						<div class="input-group-addon">MHz</div>
 					</div>
-					<p class="help-block">optional for D-STAR spots</p>
+					<p class="help-block">optional for D-STAR spots (looked up from the node's registered frequency when omitted)</p>
 				</td>
 			</tr>
 			<tr>
