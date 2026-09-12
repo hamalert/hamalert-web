@@ -11,29 +11,48 @@ function formatTriggerComments($comments) {
 	return $comments;
 }
 
+// Renders a D-STAR reflector identifier (e.g. "REF030-C"), linking it to its
+// dstarusers.org page when it's a REF-series reflector (the only series that
+// site has pages for; XRF/DCS/XLX are left as plain text). The module suffix
+// (e.g. "-C") is stripped from the URL but kept in the displayed text.
+function formatDvReflector($reflector) {
+	$html = htmlspecialchars($reflector);
+	if (preg_match('/^(REF[A-Z0-9]*)(-[A-Z])?$/', strtoupper($reflector), $m)) {
+		$url = "https://www.dstarusers.org/viewrepeater.php?system=" . rawurlencode($m[1]);
+		return '<a href="' . htmlspecialchars($url) . '" target="_blank" rel="noopener">' . $html . '</a>';
+	}
+	return $html;
+}
+
 function formatSpotDetails($spot) {
 	// D-STAR is keyed by mode, not source: source now names the feed (quadnet/ircddb/dstarusers).
 	if ($spot['mode'] == 'dstar') {
 		// Frequency first like other spots; nothing when the repeater's frequency is unknown
 		// (a band guessed from the module letter is only used for matching)
-		$details = isset($spot['frequency']) ? $spot['frequency'] . " MHz, " : "";
+		$details = isset($spot['frequency']) ? htmlspecialchars($spot['frequency'] . " MHz, ") : "";
 		if (@$spot['dvEvent'] == 'linked') {
-			$details .= "Linked " . @$spot['dvNode'] . " to " . @$spot['dvReflector'];
+			$details .= "Linked " . htmlspecialchars(@$spot['dvNode']) . " to " . formatDvReflector(@$spot['dvReflector']);
 		} else if (@$spot['dvReflector'] && @$spot['dvNode']) {
-			$details .= "Active on " . $spot['dvReflector'] . " via " . $spot['dvNode'];
+			$details .= "Active on " . formatDvReflector($spot['dvReflector']) . " via " . htmlspecialchars($spot['dvNode']);
 		} else if (@$spot['dvReflector']) {
 			// A dstarusers.org reflector-module report (e.g. "REF030-C") has no separate node -
 			// the reflector itself is what was heard.
-			$details .= "Active on " . $spot['dvReflector'];
+			$details .= "Active on " . formatDvReflector($spot['dvReflector']);
 		} else {
-			$details .= "Active on " . @$spot['dvNode'];
+			$details .= "Active on " . htmlspecialchars(@$spot['dvNode']);
 		}
 		if (@$spot['comment']) {
-			$details .= ' "' . $spot['comment'] . '"';
+			$details .= ' "' . htmlspecialchars($spot['comment']) . '"';
 		}
 		if (isset($spot['dvDuration'])) {
-			$details .= " (" . number_format($spot['dvDuration'], 1) . " s)";
+			$details .= " (" . htmlspecialchars(number_format($spot['dvDuration'], 1)) . " s)";
 		}
+		// $details is already HTML (it embeds the reflector link) - return it directly
+		// instead of falling through to the htmlspecialchars() escaping below.
+		if (@$spot['rawText']) {
+			$details .= '<br /><small class="text-muted">' . htmlspecialchars($spot['rawText']) . '</small>';
+		}
+		return $details;
 	} else if (isset($spot['frequency'])) {
 		$details = $spot['frequency'] . " MHz";
 		if (@$spot['mode']) {
@@ -57,6 +76,18 @@ function formatSpotDetails($spot) {
 		$html .= '<br /><small class="text-muted">' . htmlspecialchars($spot['rawText']) . '</small>';
 	}
 	return $html;
+}
+
+// Renders a spot's displayed callsign (e.g. "N4EDO/P") linked to its QRZ.com
+// page, keyed on the canonical callsign (e.g. "N4EDO") rather than the
+// displayed one.
+function formatSpotCallsign($spot) {
+	$display = htmlspecialchars(@$spot['fullCallsign']);
+	if (!@$spot['callsign']) {
+		return $display;
+	}
+	$url = "https://www.qrz.com/db/" . rawurlencode($spot['callsign']);
+	return '<a href="' . htmlspecialchars($url) . '" target="_blank" rel="noopener">' . $display . '</a>';
 }
 
 // Renders the "no alerts" info box or the alerts table for the last 100 alerts
@@ -92,7 +123,7 @@ function renderAlertsTable() {
 		<tr>
 			<td><?php echo htmlspecialchars($spot['receivedDate']->toDateTime()->format("Y-m-d H:i:s") . "Z") ?></td>
 			<td><?php echo htmlspecialchars($config['sources'][@$spot['source']] ?? @$spot['source']) ?></td>
-			<td><?php echo htmlspecialchars(@$spot['fullCallsign']) ?></td>
+			<td><?php echo formatSpotCallsign($spot) ?></td>
 			<td><?php echo formatSpotDetails($spot) ?></td>
 			<td><?php echo htmlspecialchars(implode(', ', array_diff(@$spot['actions'] ?: [], ['myspot']))) ?></td>
 			<td><?php echo htmlspecialchars(formatTriggerComments(@$spot['triggerComments'])) ?></td>
