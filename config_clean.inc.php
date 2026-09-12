@@ -52,7 +52,10 @@ $config = array(
 		'pskreporter' => 'PSK Reporter',
 		'pota' => 'POTA',
 		'wwff' => 'WWFFwatch',
-		'dstar' => 'D-STAR'
+		// D-STAR presence spots come from three feeds (mode is always 'dstar')
+		'quadnet' => 'D-STAR (QuadNet)',
+		'ircddb' => 'D-STAR (ircDDB)',
+		'dstarusers' => 'D-STAR (dstarusers.org)'
 	],
 
 	'actions' => [

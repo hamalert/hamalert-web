@@ -63,11 +63,13 @@ include('settings_begin.inc.php') ?>
 
 <a name="dstar"></a><h3>How do D-STAR alerts work?</h3>
 
-<p>D-STAR alerts (source “D-STAR”) are <em>presence</em> alerts rather than DX spots: they are generated from the “last heard” logs of the
+<p>D-STAR alerts (mode “D-STAR”) are <em>presence</em> alerts rather than DX spots: they are generated from the “last heard” logs of the
 	<a href="https://openquad.net">QuadNet</a> and <a href="https://ircddb.net">ircDDB</a> networks, and tell you that a station has become active on,
-	or linked to, a D-STAR repeater module or reflector module. REF reflector activity (DPlus/DExtra), which QuadNet and ircDDB never see, is
+	or linked to, a D-STAR repeater module or reflector module. REF/XRF/DCS/XLX reflector activity, which QuadNet and ircDDB never see, is
 	additionally picked up from <a href="https://www.dstarusers.org/lastheard.php">dstarusers.org</a>, whose “last heard” page is fed by DStarMonitor
-	agents running on the reflectors themselves. Please note the following:</p>
+	agents running on the reflectors themselves. Each of the three feeds is its own source (“D-STAR (QuadNet)”, “D-STAR (ircDDB)”,
+	“D-STAR (dstarusers.org)”); a trigger with no Source condition selected matches D-STAR spots from any of them, and the D-STAR event/node/reflector
+	conditions below apply the same way to all three. Please note the following:</p>
 
 <ul>
 	<li>Event “<strong>active</strong>” means that a voice transmission from the station was heard on a repeater module (or on a reflector module,
@@ -81,9 +83,9 @@ include('settings_begin.inc.php') ?>
 	<li>Use the “D-STAR repeater/node” and “D-STAR reflector” trigger conditions to restrict alerts to certain repeaters/hotspots or reflectors.
 		Values may be entered with or without the module letter, e.g. “REF030” matches “REF030-A”, “REF030-B”, “REF030-C” etc.,
 		whereas “REF030-C” only matches that module.</li>
-	<li>dstarusers.org reports hotspot/dongle users connected directly to a reflector without a module letter (e.g. “REF030” instead of
-		“REF030-C”), since it has no way to know which module they are using. A module-specific reflector trigger (e.g. “REF030-C”) therefore
-		also fires for these module-less reports, so you don't miss a dongle user just because their exact module isn't known.</li>
+	<li>dstarusers.org reports a hotspot/dongle login connected directly to a reflector (not yet transmitting) without a module letter, since it
+		has no way to know which module such a user will end up on; these are not alertable events and never generate a spot. Once the user
+		actually transmits, a proper module-specific report follows (e.g. “REF030-C”) and is alerted normally.</li>
 </ul>
 
 

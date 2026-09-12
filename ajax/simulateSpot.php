@@ -25,8 +25,8 @@ if (!preg_match($modeRegex, $inputSpot['mode']))
 	$errors[] = "Invalid mode.";
 if (!preg_match($sourceRegex, $inputSpot['source']))
 	$errors[] = "Invalid source.";
-// Frequency is optional for D-STAR spots
-if (@$inputSpot['frequency'] || $inputSpot['source'] != 'dstar') {
+// Frequency is optional for D-STAR spots (mode 'dstar'; source names the feed instead)
+if (@$inputSpot['frequency'] || $inputSpot['mode'] != 'dstar') {
 	if (!preg_match($frequencyRegex, @$inputSpot['frequency']))
 		$errors[] = "Invalid frequency.";
 }
@@ -64,7 +64,9 @@ if (@$inputSpot['comment']) {
 	$spot['comment'] = $inputSpot['comment'];
 }
 
-if ($inputSpot['source'] == 'dstar') {
+// dv* fields (D-STAR event/node/reflector) are ignored unless mode is 'dstar', regardless of
+// what the client sent - source only names the feed (quadnet/ircddb/dstarusers).
+if ($inputSpot['mode'] == 'dstar') {
 	if (@$inputSpot['dvEvent']) {
 		$spot['dvEvent'] = $inputSpot['dvEvent'];
 	}

@@ -12,7 +12,8 @@ function formatTriggerComments($comments) {
 }
 
 function formatSpotDetails($spot) {
-	if ($spot['source'] == 'dstar') {
+	// D-STAR is keyed by mode, not source: source now names the feed (quadnet/ircddb/dstarusers).
+	if ($spot['mode'] == 'dstar') {
 		// Frequency first like other spots; nothing when the repeater's frequency is unknown
 		// (a band guessed from the module letter is only used for matching)
 		$details = isset($spot['frequency']) ? $spot['frequency'] . " MHz, " : "";
@@ -21,7 +22,8 @@ function formatSpotDetails($spot) {
 		} else if (@$spot['dvReflector'] && @$spot['dvNode']) {
 			$details .= "Active on " . $spot['dvReflector'] . " via " . $spot['dvNode'];
 		} else if (@$spot['dvReflector']) {
-			// dstarusers.org reports hotspot/dongle users through a bare reflector with no module
+			// A dstarusers.org reflector-module report (e.g. "REF030-C") has no separate node -
+			// the reflector itself is what was heard.
 			$details .= "Active on " . $spot['dvReflector'];
 		} else {
 			$details .= "Active on " . @$spot['dvNode'];

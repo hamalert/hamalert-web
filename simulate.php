@@ -8,7 +8,7 @@ include('settings_begin.inc.php') ?>
 		// Load modes and sources
 		$('#modeTd').append(makeDynamicSelect('mode', modes));
 		$('#sourceTd').append(makeDynamicSelect('source', sources));
-		
+
 		$('.selectpicker').selectpicker('render');
 		$('input').keydown(function() {
 			changeSpot();
@@ -16,22 +16,47 @@ include('settings_begin.inc.php') ?>
 		$('select').change(function() {
 			changeSpot();
 		});
-		
+
+		// The D-STAR fields (event/node/reflector) only make sense for mode 'dstar'; grey them
+		// out otherwise. Picking one of the three D-STAR sources implies D-STAR, so switch mode
+		// to it automatically - but the actual enabling/disabling is keyed on mode, not source.
+		$('#mode').change(updateDstarFields);
+		$('#source').change(function() {
+			if (dstarSources.indexOf($('#source').val()) !== -1 && $('#mode').val() !== 'dstar') {
+				$('#mode').val('dstar');
+				$('#mode').selectpicker('refresh');
+				updateDstarFields();
+			}
+		});
+		updateDstarFields();
+
 		$(document).keypress(function(e) {
 			if (e.which == 13) {
 				sendSpot();
 			}
 		});
 	});
-	
+
 	function changeSpot() {
 		$('#spotSent').hide();
 	}
-	
+
+	// Enables the D-STAR fields when mode is 'dstar', and disables (and clears) them otherwise
+	function updateDstarFields() {
+		var isDstar = ($('#mode').val() === 'dstar');
+		$('#dvNode, #dvReflector').prop('disabled', !isDstar);
+		$('#dvEvent').prop('disabled', !isDstar).selectpicker('refresh');
+		if (!isDstar) {
+			$('#dvNode').val('');
+			$('#dvReflector').val('');
+			$('#dvEvent').val('').selectpicker('refresh');
+		}
+	}
+
 	function sendSpot() {
 		$('#spotSent').hide();
 		$('#spotAlert').hide();
-		
+
 		var spot = {
 			fullCallsign: $('#fullCallsign').val(),
 			frequency: $('#frequency').val(),
@@ -44,9 +69,9 @@ include('settings_begin.inc.php') ?>
 			dvNode: $('#dvNode').val(),
 			dvReflector: $('#dvReflector').val()
 		};
-		
-		// Frequency is optional for D-STAR spots
-		if (!spot.fullCallsign || (spot.source == 'dstar' ? !spot.dvNode : !spot.frequency) || !spot.mode || !spot.source || !spot.spotter) {
+
+		// Frequency is optional for D-STAR spots (mode 'dstar'); dvNode is required instead
+		if (!spot.fullCallsign || (spot.mode == 'dstar' ? !spot.dvNode : !spot.frequency) || !spot.mode || !spot.source || !spot.spotter) {
 			$('#fillInFieldsAlert').show();
 			return;
 		}
@@ -170,18 +195,18 @@ input::-webkit-inner-spin-button {
 						<option value="active">active</option>
 						<option value="linked">linked</option>
 					</select>
-					<p class="help-block">optional, only for source D-STAR</p>
+					<p class="help-block">optional, only for mode D-STAR</p>
 				</td>
 			</tr>
 			<tr>
 				<th>D-STAR node</th>
 				<td><input type="text" class="form-control" id="dvNode" placeholder="W4HFH-C" style="text-transform: uppercase" />
-				<p class="help-block">required for source D-STAR (repeater/hotspot callsign and module)</p></td>
+				<p class="help-block">required for mode D-STAR (repeater/hotspot callsign and module)</p></td>
 			</tr>
 			<tr>
 				<th>D-STAR reflector</th>
 				<td><input type="text" class="form-control" id="dvReflector" placeholder="REF030-C" style="text-transform: uppercase" />
-				<p class="help-block">optional, only for source D-STAR</p></td>
+				<p class="help-block">optional, only for mode D-STAR</p></td>
 			</tr>
 		</tbody>
 	</table>

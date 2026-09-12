@@ -469,7 +469,7 @@ $(function() {
 						</tr>
 						<tr>
 							<td><tt>source</tt></td>
-							<td>Spot source: 'rbn', 'sotawatch', 'cluster', 'pskreporter', 'pota', 'wwff' or 'dstar'</td>
+							<td>Spot source: 'rbn', 'sotawatch', 'cluster', 'pskreporter', 'pota', 'wwff', or the D-STAR feed that reported it - 'quadnet', 'ircddb' or 'dstarusers' (mode is 'dstar' for all three)</td>
 							<td><strong>rbn</strong></td>
 						</tr>
 						<tr>
@@ -579,7 +579,7 @@ $(function() {
 				
 				<p class="help-text">** For D-STAR spots, frequency and band are taken from the repeater's registered frequency (QuadNet/ircDDB repeater lists). If the repeater is not listed, frequency is absent and band is guessed from the module letter (bandIsGuessed); if that fails band is 'unknown'.</p>
 				
-				<p class="help-text">*** Only present for D-STAR spots (source 'dstar').</p>
+				<p class="help-text">*** Only present for D-STAR spots (mode 'dstar').</p>
 			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->

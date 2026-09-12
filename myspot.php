@@ -45,7 +45,8 @@ if (!$spot) {
 	$im = makeMySpotImage($callsign, "off air", $text, "last updated on " . date("Y-m-d H:i:s") . "Z", @$_GET['dark'], true, @$_GET['hr']);
 } else {
 	$addInfo = null;
-	if ($spot['source'] == 'dstar') {
+	// D-STAR is keyed by mode, not source: source now names the feed (quadnet/ircddb/dstarusers).
+	if ($spot['mode'] == 'dstar') {
 		$freqMode = isset($spot['frequency']) ? $spot['frequency'] . " MHz (DSTAR)" : "DSTAR";
 		if (@$spot['dvNode'] && @$spot['dvReflector']) {
 			if (@$spot['dvEvent'] == 'linked') {

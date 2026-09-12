@@ -462,8 +462,9 @@ function updateConditionValue(conditionName, value) {
 		// Reload regions and references
 		updateConditionsTable();
 	} else if (conditionName == "source" && currentTrigger.conditions.dvEvent === undefined &&
-		(value === "dstar" || (Array.isArray(value) && value.indexOf("dstar") !== -1))) {
-		// D-STAR source: default to "active" events only, so that link commands don't alert unless asked for
+		(dstarSources.indexOf(value) !== -1 || (Array.isArray(value) && value.some(v => dstarSources.indexOf(v) !== -1)))) {
+		// D-STAR source (quadnet/ircddb/dstarusers): default to "active" events only, so that
+		// link commands don't alert unless asked for
 		currentTrigger.conditions.dvEvent = "active";
 		updateConditionsTable();
 	}
@@ -598,8 +599,8 @@ function validateTrigger() {
 			// Only one common mode condition is silly
 			isSilly = true;
 		} else if (currentTrigger.conditions.source &&
-			currentTrigger.conditions.source.some(source => 
-				source === "cluster" || source === "rbn" || source === "pskreporter" || source === "dstar"
+			currentTrigger.conditions.source.some(source =>
+				source === "cluster" || source === "rbn" || source === "pskreporter" || dstarSources.indexOf(source) !== -1
 			)) {
 			// Only one common source condition is silly
 			isSilly = true;
