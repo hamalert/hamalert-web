@@ -595,10 +595,10 @@ var conditionHelpTexts = {
 	'state': '<small>Data obtained from FCC ULS and Government of Canada databases, updated weekly. Park state from POTA spots may override the callsign\'s home state.</small>',
 	'spotterState': '<small>Data obtained from FCC ULS and Government of Canada database, updated weekly.</small>',
 	'wwffRef': '<small>If you want to match any park reference in the division, then please don\'t “Select All” – instead, simply remove the “Park reference” condition and leave only the division.</small>',
-	'dvEvent': '<em>Active</em>: a voice transmission from the callsign was heard on the repeater/node (and reflector, if linked). <em>Linked</em>: the callsign sent a link command to a reflector by radio.<br /><small>D-STAR alerts are presence alerts based on the QuadNet and ircDDB “last heard” logs; see the <a href="help#dstar">Help</a> page.</small>',
+	'dvEvent': '<em>Active</em>: a voice transmission from the callsign was heard on the repeater/node (and reflector, if linked). <em>Linked</em>: the callsign sent a link command to a reflector by radio.<br /><small>D-STAR alerts are presence alerts based on the QuadNet, ircDDB and dstarusers.org “last heard” logs; see the <a href="help#dstar">Help</a> page.</small>',
 	'dvNode': 'The D-STAR repeater or hotspot callsign, optionally with the module letter after a hyphen.<br />Examples: W4HFH-C (module C only), W4HFH (any module).',
 	'dvNode_array': 'The D-STAR repeater or hotspot callsigns, optionally with the module letter after a hyphen, separated with commas, spaces or line breaks.<br />Examples: W4HFH-C (module C only), W4HFH (any module).',
-	'dvReflector': 'The D-STAR reflector, optionally with the module letter after a hyphen.<br />Examples: REF030-C (module C only), REF030 (any module). XRF, DCS and XLX reflectors work the same way.',
+	'dvReflector': 'The D-STAR reflector, optionally with the module letter after a hyphen.<br />Examples: REF030-C (module C only), REF030 (any module). XRF, DCS and XLX reflectors work the same way.<br /><small>Hotspot/dongle users reported by dstarusers.org without a module (they don\'t know which one they\'re on) also match a module-specific trigger like REF030-C.</small>',
 	'dvReflector_array': 'The D-STAR reflectors, optionally with the module letter after a hyphen, separated with commas, spaces or line breaks.<br />Examples: REF030-C (module C only), REF030 (any module).'
 };
 

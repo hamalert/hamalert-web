@@ -65,7 +65,9 @@ include('settings_begin.inc.php') ?>
 
 <p>D-STAR alerts (source “D-STAR”) are <em>presence</em> alerts rather than DX spots: they are generated from the “last heard” logs of the
 	<a href="https://openquad.net">QuadNet</a> and <a href="https://ircddb.net">ircDDB</a> networks, and tell you that a station has become active on,
-	or linked to, a D-STAR repeater module or reflector module. Please note the following:</p>
+	or linked to, a D-STAR repeater module or reflector module. REF reflector activity (DPlus/DExtra), which QuadNet and ircDDB never see, is
+	additionally picked up from <a href="https://www.dstarusers.org/lastheard.php">dstarusers.org</a>, whose “last heard” page is fed by DStarMonitor
+	agents running on the reflectors themselves. Please note the following:</p>
 
 <ul>
 	<li>Event “<strong>active</strong>” means that a voice transmission from the station was heard on a repeater module (or on a reflector module,
@@ -79,6 +81,9 @@ include('settings_begin.inc.php') ?>
 	<li>Use the “D-STAR repeater/node” and “D-STAR reflector” trigger conditions to restrict alerts to certain repeaters/hotspots or reflectors.
 		Values may be entered with or without the module letter, e.g. “REF030” matches “REF030-A”, “REF030-B”, “REF030-C” etc.,
 		whereas “REF030-C” only matches that module.</li>
+	<li>dstarusers.org reports hotspot/dongle users connected directly to a reflector without a module letter (e.g. “REF030” instead of
+		“REF030-C”), since it has no way to know which module they are using. A module-specific reflector trigger (e.g. “REF030-C”) therefore
+		also fires for these module-less reports, so you don't miss a dongle user just because their exact module isn't known.</li>
 </ul>
 
 

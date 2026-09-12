@@ -18,8 +18,11 @@ function formatSpotDetails($spot) {
 		$details = isset($spot['frequency']) ? $spot['frequency'] . " MHz, " : "";
 		if (@$spot['dvEvent'] == 'linked') {
 			$details .= "Linked " . @$spot['dvNode'] . " to " . @$spot['dvReflector'];
+		} else if (@$spot['dvReflector'] && @$spot['dvNode']) {
+			$details .= "Active on " . $spot['dvReflector'] . " via " . $spot['dvNode'];
 		} else if (@$spot['dvReflector']) {
-			$details .= "Active on " . $spot['dvReflector'] . " via " . @$spot['dvNode'];
+			// dstarusers.org reports hotspot/dongle users through a bare reflector with no module
+			$details .= "Active on " . $spot['dvReflector'];
 		} else {
 			$details .= "Active on " . @$spot['dvNode'];
 		}
