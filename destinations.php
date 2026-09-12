@@ -577,7 +577,7 @@ $(function() {
 				
 				<p class="help-text">* SOTA summit information is available for spots from SOTAwatch and from the DX cluster (if the cluster spot comment includes a valid SOTA reference). IOTA and WWFF references are extracted from SOTAwatch and DX cluster spot comments; only valid IOTA/WWFF/POTA references according to the relevant directories will be considered.</p>
 				
-				<p class="help-text">** For D-STAR spots, frequency and band are taken from the repeater's registered frequency (QuadNet/ircDDB repeater lists). If the repeater is not listed, band is guessed from the module letter and frequency is absent; if that fails band is 'unknown'.</p>
+				<p class="help-text">** For D-STAR spots, frequency and band are taken from the repeater's registered frequency (QuadNet/ircDDB repeater lists). If the repeater is not listed, frequency is absent and band is guessed from the module letter (bandIsGuessed); if that fails band is 'unknown'.</p>
 				
 				<p class="help-text">*** Only present for D-STAR spots (source 'dstar').</p>
 			</div>

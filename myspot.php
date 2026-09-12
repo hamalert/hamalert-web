@@ -46,13 +46,7 @@ if (!$spot) {
 } else {
 	$addInfo = null;
 	if ($spot['source'] == 'dstar') {
-		if (isset($spot['frequency'])) {
-			$freqMode = $spot['frequency'] . " MHz (DSTAR)";
-		} else if (@$spot['band'] && $spot['band'] != 'unknown') {
-			$freqMode = $spot['band'] . " (DSTAR)";
-		} else {
-			$freqMode = "band unknown (DSTAR)";
-		}
+		$freqMode = isset($spot['frequency']) ? $spot['frequency'] . " MHz (DSTAR)" : "DSTAR";
 		if (@$spot['dvNode'] && @$spot['dvReflector']) {
 			if (@$spot['dvEvent'] == 'linked') {
 				$addInfo = "linked " . $spot['dvNode'] . " to " . $spot['dvReflector'];

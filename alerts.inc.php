@@ -13,13 +13,9 @@ function formatTriggerComments($comments) {
 
 function formatSpotDetails($spot) {
 	if ($spot['source'] == 'dstar') {
-		if (isset($spot['frequency'])) {
-			$details = $spot['frequency'] . " MHz, ";
-		} else if (@$spot['band'] && $spot['band'] != 'unknown') {
-			$details = $spot['band'] . ", ";
-		} else {
-			$details = "band unknown, ";
-		}
+		// Frequency first like other spots; nothing when the repeater's frequency is unknown
+		// (a band guessed from the module letter is only used for matching)
+		$details = isset($spot['frequency']) ? $spot['frequency'] . " MHz, " : "";
 		if (@$spot['dvEvent'] == 'linked') {
 			$details .= "Linked " . @$spot['dvNode'] . " to " . @$spot['dvReflector'];
 		} else if (@$spot['dvReflector']) {
