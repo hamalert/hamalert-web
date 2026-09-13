@@ -32,7 +32,7 @@ Then open http://localhost:8081/login. On the first start the container runs `co
 (into the `hamalert-dev-web-vendor` volume, so your checkout stays clean) and generates
 `config.inc.php` from `config_clean.inc.php`; both take a moment. Registration by e-mail does not
 work locally, hence the seed script. Without the spot processing backend there are no spots and
-no alerts, but everything else (login, trigger editor, destinations, the Alerts page) works.
+no alerts, but everything else (login, trigger editor, destinations) works.
 
 To tear it down: `docker rm -f hamalert-dev-web hamalert-dev-mongo`, and
 `docker volume rm hamalert-dev-web-vendor` if you want Composer to start from scratch.

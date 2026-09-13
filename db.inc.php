@@ -434,20 +434,6 @@ function getSpots($maxAge, $limit, $action) {
 	])->toArray();
 }
 
-function getRecentSpots($maxAge, $limit) {
-	global $db;
-	$maxAge = (int)$maxAge;
-	$minDate = new MongoDB\BSON\UTCDateTime(new DateTime("$maxAge seconds ago"));
-	return $db->spots->find([
-		'user_id' => $_SESSION['user']['_id'],
-		'receivedDate' => ['$gte' => $minDate]
-	], [
-		'projection' => ['user_id' => 0],
-		'limit' => (int)$limit,
-		'sort' => ['receivedDate' => -1]
-	])->toArray();
-}
-
 function deleteSpot($id) {
 	global $db;
 	$res = $db->spots->deleteOne(['_id' => new MongoDB\BSON\ObjectID($id), 'user_id' => $_SESSION['user']['_id']]);
