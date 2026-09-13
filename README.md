@@ -25,7 +25,7 @@ docker run -d --name hamalert-dev-web --network hamalert-dev -p 127.0.0.1:8081:8
 	-e SELF_URL=http://localhost:8081 \
 	hamalert-web-dev
 
-docker exec hamalert-dev-web php tools/seedLocalUser.php   # creates user HB9DQM / testpass123
+docker exec hamalert-dev-web php tools/seedLocalUser.php   # creates user N0CALL / testpass123
 ```
 
 Then open http://localhost:8081/login. On the first start the container runs `composer install`

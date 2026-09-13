@@ -5,7 +5,7 @@
 	Run inside the dev container:
 	  docker exec hamalert-dev-web php tools/seedLocalUser.php [USERNAME] [PASSWORD]
 
-	Defaults: HB9DQM / testpass123. Re-running with an existing username leaves it untouched.
+	Defaults: N0CALL / testpass123. Re-running with an existing username leaves it untouched.
 */
 if (PHP_SAPI !== 'cli') {
 	http_response_code(404);
@@ -18,7 +18,7 @@ $_SERVER['REQUEST_URI'] = '/';
 chdir(dirname(__DIR__));
 require_once("db.inc.php");
 
-$username = strtoupper($argv[1] ?? 'HB9DQM');
+$username = strtoupper($argv[1] ?? 'N0CALL');
 $password = $argv[2] ?? 'testpass123';
 
 if (getUserForUsername($username)) {
