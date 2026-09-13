@@ -24,6 +24,45 @@ function formatDvReflector($reflector) {
 	return $html;
 }
 
+// Renders a D-STAR spot's spotter callsign (e.g. "REF030" or "N4EDO"), linking it
+// to its dstarusers.org page when it's a REF-series reflector reporting itself as
+// the spotter (the same site/URL pattern as formatDvReflector() above); a human
+// spotter's callsign is left as plain text.
+function formatSpotter($spotter) {
+	$html = htmlspecialchars($spotter);
+	if (preg_match('/^(REF[A-Z0-9]*)(-[A-Z])?$/', strtoupper($spotter), $m)) {
+		$url = "https://www.dstarusers.org/viewrepeater.php?system=" . rawurlencode($m[1]);
+		return '<a href="' . htmlspecialchars($url) . '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' . $html . '</a>';
+	}
+	return $html;
+}
+
+// Renders a D-STAR spot's repeater/node identifier (e.g. "W4HFH-C"), linking it to
+// its RepeaterBook search results by the node's callsign (module suffix stripped
+// for the URL, kept in the displayed text). No link when the node's callsign is
+// the operator's own callsign - that's a personal hotspot, not a listed repeater,
+// so RepeaterBook has nothing for it.
+function formatDvNode($spot) {
+	$node = @$spot['dvNode'];
+	$html = htmlspecialchars($node);
+	if (!$node) {
+		return $html;
+	}
+	$nodeCallsign = strtoupper(preg_replace('/-[A-Z0-9]+$/', '', $node));
+	$ownCallsigns = [];
+	if (@$spot['callsign']) {
+		$ownCallsigns[] = strtoupper($spot['callsign']);
+	}
+	if (@$spot['fullCallsign']) {
+		$ownCallsigns[] = strtoupper(preg_replace('#/.*$#', '', $spot['fullCallsign']));
+	}
+	if (in_array($nodeCallsign, $ownCallsigns, true)) {
+		return $html;
+	}
+	$url = "https://www.repeaterbook.com/global_repeaters/keyword.php?func=result&keyword=" . rawurlencode($nodeCallsign);
+	return '<a href="' . htmlspecialchars($url) . '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' . $html . '</a>';
+}
+
 function formatSpotDetails($spot) {
 	// D-STAR is keyed by mode, not source: source now names the feed (quadnet/ircddb/dstarusers).
 	if ($spot['mode'] == 'dstar') {
@@ -31,15 +70,15 @@ function formatSpotDetails($spot) {
 		// (a band guessed from the module letter is only used for matching)
 		$details = isset($spot['frequency']) ? htmlspecialchars($spot['frequency'] . " MHz, ") : "";
 		if (@$spot['dvEvent'] == 'linked') {
-			$details .= "Linked " . htmlspecialchars(@$spot['dvNode']) . " to " . formatDvReflector(@$spot['dvReflector']);
+			$details .= "Linked " . formatDvNode($spot) . " to " . formatDvReflector(@$spot['dvReflector']);
 		} else if (@$spot['dvReflector'] && @$spot['dvNode']) {
-			$details .= "Active on " . formatDvReflector($spot['dvReflector']) . " via " . htmlspecialchars($spot['dvNode']);
+			$details .= "Active on " . formatDvReflector($spot['dvReflector']) . " via " . formatDvNode($spot);
 		} else if (@$spot['dvReflector']) {
 			// A dstarusers.org reflector-module report (e.g. "REF030-C") has no separate node -
 			// the reflector itself is what was heard.
 			$details .= "Active on " . formatDvReflector($spot['dvReflector']);
 		} else {
-			$details .= "Active on " . htmlspecialchars(@$spot['dvNode']);
+			$details .= "Active on " . formatDvNode($spot);
 		}
 		if (@$spot['comment']) {
 			$details .= ' "' . htmlspecialchars($spot['comment']) . '"';
@@ -220,6 +259,14 @@ function renderSpotDetailTable($spot) {
 			case 'dvReflector':
 				// Reuse the dstarusers.org-linked rendering used in the overview's Details column.
 				$rows[] = [$labels[$key], formatDvReflector($value)];
+				continue 2;
+			case 'dvNode':
+				// Reuse the RepeaterBook-linked rendering used in the overview's Details column.
+				$rows[] = [$labels[$key], formatDvNode($spot)];
+				continue 2;
+			case 'spotter':
+				// Link REF-series reflector spotters to dstarusers.org, same as formatDvReflector().
+				$rows[] = [$labels[$key], formatSpotter($value)];
 				continue 2;
 			case 'actions':
 				$rows[] = [$labels[$key], htmlspecialchars(implode(', ', (array)$value))];
