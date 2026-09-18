@@ -176,7 +176,8 @@ var editorFunctions = {
 		return conditionValuePicker(conditionName, objectToKeyValueList(dvEvents));
 	},
 	'dvNode': callsignEditor,
-	'dvReflector': callsignEditor
+	'dvReflector': callsignEditor,
+	'dvGroup': callsignEditor
 };
 
 $(function() {
@@ -448,7 +449,13 @@ function updateConditionValue(conditionName, value) {
 		}
 	}
 	if (arrayConditions[conditionName] && !Array.isArray(value)) {
-		value = uniq(value.trim().split(/[\s,]+/));
+		if (conditionName == 'dvGroup') {
+			// A Smart Group callsign may contain a space ("QNET20 C"), so only split on commas
+			// and line breaks
+			value = uniq(value.split(/[,\n]+/).map(function(x) { return x.trim(); }).filter(Boolean));
+		} else {
+			value = uniq(value.trim().split(/[\s,]+/));
+		}
 		if (value.length == 1)
 			value = value[0];
 	}
@@ -764,6 +771,24 @@ function validateCondition(conditionName) {
 		currentTrigger.conditions[conditionName] = value;
 	}
 
+	// Check D-STAR groups (QuadNet Smart Group / routing group callsign, e.g. "DSTAR1", "QNET20 C").
+	// Unlike dvReflector, no "-MODULE" normalization is applied; the single internal space (if any)
+	// is kept as-is.
+	if (conditionName == 'dvGroup') {
+		if (!Array.isArray(value))
+			value = [value];
+		for (var i = 0; i < value.length; i++) {
+			var group = value[i].toUpperCase().replace(/\s+/g, ' ').trim();
+			value[i] = group;
+			var groupRegex = /^[A-Z0-9]{1,8}( [A-Z0-9])?$/;
+			if (!groupRegex.test(group)) {
+				return "Invalid D-STAR group '" + group + "'";
+			}
+		}
+		value.sort();
+		currentTrigger.conditions[conditionName] = value;
+	}
+
 	// Check summit refs list
 	if (conditionName == 'summitRefs') {
 		if (!Array.isArray(value)) {
@@ -871,7 +896,7 @@ function addCondition(conditionName) {
 			currentTrigger.conditions['band'] = "";
 		if (!currentTrigger.options.clublog)
 			currentTrigger.options.clublog = {modes: 'all', status: ['confirmed', 'worked', 'verified'], callsign: username, date: 0};
-	} else if (conditionName == 'dvNode' || conditionName == 'dvReflector') {
+	} else if (conditionName == 'dvNode' || conditionName == 'dvReflector' || conditionName == 'dvGroup') {
 		// D-STAR conditions default to "active" events only, so that link commands don't alert unless asked for
 		if (currentTrigger.conditions['dvEvent'] === undefined)
 			currentTrigger.conditions['dvEvent'] = "active";

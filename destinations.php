@@ -563,6 +563,16 @@ $(function() {
 							<td><strong>REF030-C</strong></td>
 						</tr>
 						<tr>
+							<td><tt>dvGroup</tt></td>
+							<td>QuadNet Smart Group (routing group) callsign, if the station keyed up with one ***</td>
+							<td><strong>DSTAR1</strong></td>
+						</tr>
+						<tr>
+							<td><tt>dvGroupName</tt></td>
+							<td>Human-readable name of the QuadNet Smart Group ***</td>
+							<td><strong>QuadNet Array</strong></td>
+						</tr>
+						<tr>
 							<td><tt>dvSuffix</tt></td>
 							<td>D-STAR radio suffix (if set) ***</td>
 							<td><strong>ID51</strong></td>

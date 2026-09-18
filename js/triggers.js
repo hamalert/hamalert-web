@@ -38,7 +38,8 @@ var conditionLabels = {
 	'wwffRefs': 'Park reference list',
 	'dvEvent': 'D-STAR event',
 	'dvNode': 'D-STAR repeater/node',
-	'dvReflector': 'D-STAR reflector'
+	'dvReflector': 'D-STAR reflector',
+	'dvGroup': 'D-STAR group'
 };
 
 var conditionsOrder = [
@@ -51,7 +52,7 @@ var conditionsOrder = [
 	'iotaGroupRef',
 	'summitAssociation', 'summitRegion', 'summitRef', 'summitRefs', 'summitPointsFrom', 'summitActivationsFrom',
 	'wwffDivision', 'wwffRef', 'wwffRefs',
-	'dvEvent', 'dvNode', 'dvReflector',
+	'dvEvent', 'dvNode', 'dvReflector', 'dvGroup',
 	'notCallsign', 'notFullCallsign', 'notSpotter', 'notPrefix'
 ];
 
@@ -65,7 +66,7 @@ var conditionsGroups = [
 	{title: 'IOTA', conditions: ['iotaGroupRef']},
 	{title: 'SOTA', conditions: ['summitAssociation', 'summitRegion', 'summitRef', 'summitRefs', 'summitPointsFrom', 'summitActivationsFrom']},
 	{title: 'WWFF/POTA', conditions: ['wwffDivision', 'wwffRef', 'wwffRefs']},
-	{title: 'D-STAR', conditions: ['dvEvent', 'dvNode', 'dvReflector']},
+	{title: 'D-STAR', conditions: ['dvEvent', 'dvNode', 'dvReflector', 'dvGroup']},
 	{title: 'Callsign exclusions', conditions: ['notCallsign', 'notFullCallsign', 'notSpotter', 'notPrefix']}
 ];
 
@@ -255,6 +256,11 @@ var arrayConditions = {
 		maxDisplay: 3,
 		maxDisplaySmall: 3,
 		suffix: 'reflectors'
+	},
+	'dvGroup': {
+		maxDisplay: 3,
+		maxDisplaySmall: 3,
+		suffix: 'groups'
 	}
 };
 
@@ -608,7 +614,9 @@ var conditionHelpTexts = {
 	'dvNode': 'The D-STAR repeater or hotspot callsign, optionally with the module letter after a hyphen.<br />Examples: W4HFH-C (module C only), W4HFH (any module).',
 	'dvNode_array': 'The D-STAR repeater or hotspot callsigns, optionally with the module letter after a hyphen, separated with commas, spaces or line breaks.<br />Examples: W4HFH-C (module C only), W4HFH (any module).',
 	'dvReflector': 'The D-STAR reflector, optionally with the module letter after a hyphen.<br />Examples: REF030-C (module C only), REF030 (any module). XRF, DCS and XLX reflectors work the same way.',
-	'dvReflector_array': 'The D-STAR reflectors, optionally with the module letter after a hyphen, separated with commas, spaces or line breaks.<br />Examples: REF030-C (module C only), REF030 (any module).'
+	'dvReflector_array': 'The D-STAR reflectors, optionally with the module letter after a hyphen, separated with commas, spaces or line breaks.<br />Examples: REF030-C (module C only), REF030 (any module).',
+	'dvGroup': 'The QuadNet Smart Group (routing group) callsign the station keyed up with in the UR field, e.g. DSTAR1 (QuadNet Array) or QNET20 C (Tech Chat). See <a href="https://www.openquad.net/starnet.php" target="_blank">https://www.openquad.net/starnet.php</a> for the list.',
+	'dvGroup_array': 'The QuadNet Smart Group (routing group) callsign the station keyed up with in the UR field, e.g. DSTAR1 (QuadNet Array) or QNET20 C (Tech Chat), separated with commas or line breaks (not spaces, as a group callsign may contain one). See <a href="https://www.openquad.net/starnet.php" target="_blank">https://www.openquad.net/starnet.php</a> for the list.'
 };
 
 var daysOfWeek = [

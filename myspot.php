@@ -54,10 +54,15 @@ if (!$spot) {
 			} else {
 				$addInfo = "on " . $spot['dvReflector'] . " via " . $spot['dvNode'];
 			}
+		} else if (@$spot['dvNode'] && @$spot['dvGroup']) {
+			// Smart Group transmission: no reflector, just the routing group the station keyed up with
+			$addInfo = "on " . $spot['dvGroupName'] . " (" . $spot['dvGroup'] . ") via " . $spot['dvNode'];
 		} else if (@$spot['dvNode']) {
 			$addInfo = "on " . $spot['dvNode'];
 		} else if (@$spot['dvReflector']) {
 			$addInfo = "on " . $spot['dvReflector'];
+		} else if (@$spot['dvGroup']) {
+			$addInfo = "on " . $spot['dvGroupName'] . " (" . $spot['dvGroup'] . ")";
 		}
 	} else if (isset($spot['frequency'])) {
 		$freqMode = $spot['frequency'] . " MHz";

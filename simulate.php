@@ -44,11 +44,12 @@ include('settings_begin.inc.php') ?>
 	// Enables the D-STAR fields when mode is 'dstar', and disables (and clears) them otherwise
 	function updateDstarFields() {
 		var isDstar = ($('#mode').val() === 'dstar');
-		$('#dvNode, #dvReflector').prop('disabled', !isDstar);
+		$('#dvNode, #dvReflector, #dvGroup').prop('disabled', !isDstar);
 		$('#dvEvent').prop('disabled', !isDstar).selectpicker('refresh');
 		if (!isDstar) {
 			$('#dvNode').val('');
 			$('#dvReflector').val('');
+			$('#dvGroup').val('');
 			$('#dvEvent').val('').selectpicker('refresh');
 		}
 	}
@@ -67,7 +68,8 @@ include('settings_begin.inc.php') ?>
 			comment: $('#comment').val(),
 			dvEvent: $('#dvEvent').val(),
 			dvNode: $('#dvNode').val(),
-			dvReflector: $('#dvReflector').val()
+			dvReflector: $('#dvReflector').val(),
+			dvGroup: $('#dvGroup').val()
 		};
 
 		// Frequency is optional for D-STAR spots (mode 'dstar'); dvNode is required instead
@@ -207,6 +209,11 @@ input::-webkit-inner-spin-button {
 				<th>D-STAR reflector</th>
 				<td><input type="text" class="form-control" id="dvReflector" placeholder="REF030-C" style="text-transform: uppercase" />
 				<p class="help-block">optional, only for mode D-STAR</p></td>
+			</tr>
+			<tr>
+				<th>D-STAR group</th>
+				<td><input type="text" class="form-control" id="dvGroup" placeholder="DSTAR1" style="text-transform: uppercase" />
+				<p class="help-block">optional, only for mode D-STAR (e.g. DSTAR1)</p></td>
 			</tr>
 		</tbody>
 	</table>

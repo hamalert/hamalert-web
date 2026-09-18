@@ -88,6 +88,12 @@ include('settings_begin.inc.php') ?>
 		actually transmits, a proper module-specific report follows (e.g. “REF030-C”) and is alerted normally.</li>
 </ul>
 
+<p>QuadNet also supports “Smart Groups”: instead of routing to a specific repeater or reflector module, a station can key up with a routing-group
+	callsign (e.g. “DSTAR1” or “QNET20 C”) in the radio's UR field, and QuadNet delivers the transmission to an appropriate node on that group's
+	behalf. These show up as event “active” spots with a node but no reflector. Use the “D-STAR group” trigger condition, with the group callsign
+	exactly as it would be typed into the radio, to alert on a specific Smart Group; see <a href="https://www.openquad.net/starnet.php">the QuadNet
+	Smart Group list</a> for the available groups.</p>
+
 
 <h3>What is the difference between the “Callsign” and “Full callsign” conditions?</h3>
 

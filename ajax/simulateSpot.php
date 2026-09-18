@@ -15,6 +15,7 @@ $frequencyRegex = "/^\d+\.?(?:\d+)?$/";
 $summitRefRegex = "/^[a-zA-Z0-9]{1,8}\/[a-zA-Z]{2}\-(([0-9][0-9][1-9])|([0-9][1-9][0])|([1-9][0-9][0]))$/i";
 $dvEventRegex = "/^(active|linked)$/";
 $dvNodeRegex = "/^[A-Z0-9]{3,7}(-[A-Z])?$/";	// also used for reflectors
+$dvGroupRegex = "/^[A-Z0-9]{1,8}( [A-Z0-9])?$/";
 
 $errors = [];
 if (!preg_match($callsignRegex, $inputSpot['fullCallsign']))
@@ -38,6 +39,8 @@ if (@$inputSpot['dvNode'] && !preg_match($dvNodeRegex, strtoupper($inputSpot['dv
 	$errors[] = "Invalid D-STAR node.";
 if (@$inputSpot['dvReflector'] && !preg_match($dvNodeRegex, strtoupper($inputSpot['dvReflector'])))
 	$errors[] = "Invalid D-STAR reflector.";
+if (@$inputSpot['dvGroup'] && !preg_match($dvGroupRegex, strtoupper(trim(preg_replace('/\s+/', ' ', $inputSpot['dvGroup'])))))
+	$errors[] = "Invalid D-STAR group.";
 
 if ($errors) {
 	echo json_encode(['success' => false, 'errors' => $errors]);
@@ -75,6 +78,9 @@ if ($inputSpot['mode'] == 'dstar') {
 	}
 	if (@$inputSpot['dvReflector']) {
 		$spot['dvReflector'] = strtoupper($inputSpot['dvReflector']);
+	}
+	if (@$inputSpot['dvGroup']) {
+		$spot['dvGroup'] = strtoupper(trim(preg_replace('/\s+/', ' ', $inputSpot['dvGroup'])));
 	}
 }
 
