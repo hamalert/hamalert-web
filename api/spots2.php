@@ -21,6 +21,11 @@ foreach ($spots as &$spot) {
 	if (is_array(@$spot['state'])) {
 		$spot['state'] = join(",", $spot['state']);
 	}
+
+	// Add "triggerComments" field (was renamed in DB, but older App versions still expect the plural form)
+	if (@$spot['triggerComment']) {
+		$spot['triggerComments'] = $spot['triggerComment'];
+	}
 }
 
 resetBadgeCount();
