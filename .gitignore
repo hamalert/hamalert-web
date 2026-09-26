@@ -1,2 +1,12 @@
 www/vendor
 config.inc.php
+
+# vendor/ is only partly committed (vendor/autoload.php and
+# vendor/fguillot/json-rpc are checked in on purpose). Everything else that
+# `composer install` pulls in per composer.json/composer.lock -- notably
+# vendor/mongodb, plus vendor/composer, vendor/psr and vendor/symfony -- is
+# not committed and is generated on demand (see docker/dev/entrypoint.sh),
+# so ignore it instead of leaving it untracked in `git status`.
+/vendor/*
+!/vendor/autoload.php
+!/vendor/fguillot

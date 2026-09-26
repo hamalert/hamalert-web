@@ -11,6 +11,16 @@ include('settings_begin.inc.php') ?>
 </div>
 */ ?>
 
+<h3>2026-09-10</h3>
+
+<ul>
+	<li>D-STAR presence alerts: HamAlert now generates spots when a station becomes active on, or links to, a D-STAR repeater module or reflector module
+		(based on the QuadNet and ircDDB “last heard” logs). Use the new source “D-STAR” and the “D-STAR event”, “D-STAR repeater/node” and “D-STAR reflector” trigger conditions.</li>
+	<li>D-STAR spots include frequency and band whenever the repeater is listed in the QuadNet/ircDDB repeater lists, so band conditions and limits apply to them as usual; otherwise no frequency is shown and a band guessed from the module letter is used for matching only. See the <a href="help#dstar">help page</a> for details.</li>
+	<li>New notification parameters <tt>dvEvent</tt>, <tt>dvNode</tt>, <tt>dvReflector</tt>, <tt>dvSuffix</tt> and <tt>dvDuration</tt> are available for URL notifications.</li>
+	<li>New “D-STAR group” trigger condition and <tt>dvGroup</tt>/<tt>dvGroupName</tt> notification parameters let you alert on QuadNet “Smart Group” (routing group) transmissions, e.g. “DSTAR1” or “QNET20 C”. See the <a href="help#dstar">help page</a> for details.</li>
+</ul>
+
 <h3>2025-06-01</h3>
 
 <ul>

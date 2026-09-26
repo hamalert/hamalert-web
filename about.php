@@ -9,8 +9,9 @@ include('settings_begin.inc.php') ?>
 
 <p class="lead">HamAlert is a system that allows you to get notifications when a desired station appears on 
 	the <a href="https://dxwatch.com/">DX cluster</a>, the <a href="http://www.reversebeacon.net">Reverse Beacon Network</a>,
-	<a href="https://sotawatch.sota.org.uk">SOTAwatch</a>, <a href="https://pota.app">POTA</a>, <a href="https://wwff.co/spotline/">WWFF Spotline</a>, or <a href="https://pskreporter.info">PSK Reporter</a>.
-	No need to keep checking these resources manually if you're looking for a certain callsign, DXCC, CQ zone, IOTA island, SOTA summit or WWFF/POTA reference.</p>
+	<a href="https://sotawatch.sota.org.uk">SOTAwatch</a>, <a href="https://pota.app">POTA</a>, <a href="https://wwff.co/spotline/">WWFF Spotline</a>, <a href="https://pskreporter.info">PSK Reporter</a>,
+	or becomes active on a D-STAR repeater or reflector (via <a href="https://openquad.net">QuadNet</a> / <a href="https://ircddb.net">ircDDB</a>).
+	No need to keep checking these resources manually if you're looking for a certain callsign, DXCC, CQ zone, IOTA island, SOTA summit, WWFF/POTA reference or D-STAR reflector.</p>
 		
 	<p>You can receive alerts via Push notifications, Threema, Telnet or URL GET/POST. You can also filter spots by various criteria, including:</p>
 
@@ -27,6 +28,7 @@ include('settings_begin.inc.php') ?>
 	<li>Time and days of week</li>
 	<li>Source</li>
 	<li>Spotter callsign and DXCC</li>
+	<li>D-STAR repeater module / reflector module and event (active/linked)</li>
 </ul>
 
 <p>Furthermore, you can set limits on the number of alerts in a certain time period so you don't receive duplicate spots,

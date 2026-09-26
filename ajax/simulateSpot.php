@@ -13,6 +13,9 @@ $modeRegex = "/^[a-z0-9]{2,8}$/";
 $sourceRegex = "/^[a-z]{2,32}$/";
 $frequencyRegex = "/^\d+\.?(?:\d+)?$/";
 $summitRefRegex = "/^[a-zA-Z0-9]{1,8}\/[a-zA-Z]{2}\-(([0-9][0-9][1-9])|([0-9][1-9][0])|([1-9][0-9][0]))$/i";
+$dvEventRegex = "/^(active|linked)$/";
+$dvNodeRegex = "/^[A-Z0-9]{3,7}(-[A-Z])?$/";	// also used for reflectors
+$dvGroupRegex = "/^[A-Z0-9]{1,8}( [A-Z0-9])?$/";
 
 $errors = [];
 if (!preg_match($callsignRegex, $inputSpot['fullCallsign']))
@@ -23,10 +26,21 @@ if (!preg_match($modeRegex, $inputSpot['mode']))
 	$errors[] = "Invalid mode.";
 if (!preg_match($sourceRegex, $inputSpot['source']))
 	$errors[] = "Invalid source.";
-if (!preg_match($frequencyRegex, $inputSpot['frequency']))
-	$errors[] = "Invalid frequency.";
+// Frequency is optional for D-STAR spots (mode 'dstar'; source names the feed instead)
+if (@$inputSpot['frequency'] || $inputSpot['mode'] != 'dstar') {
+	if (!preg_match($frequencyRegex, @$inputSpot['frequency']))
+		$errors[] = "Invalid frequency.";
+}
 if (@$inputSpot['summitRef'] && !preg_match($summitRefRegex, $inputSpot['summitRef']))
 	$errors[] = "Invalid summit reference.";
+if (@$inputSpot['dvEvent'] && !preg_match($dvEventRegex, $inputSpot['dvEvent']))
+	$errors[] = "Invalid D-STAR event.";
+if (@$inputSpot['dvNode'] && !preg_match($dvNodeRegex, strtoupper($inputSpot['dvNode'])))
+	$errors[] = "Invalid D-STAR node.";
+if (@$inputSpot['dvReflector'] && !preg_match($dvNodeRegex, strtoupper($inputSpot['dvReflector'])))
+	$errors[] = "Invalid D-STAR reflector.";
+if (@$inputSpot['dvGroup'] && !preg_match($dvGroupRegex, strtoupper(trim(preg_replace('/\s+/', ' ', $inputSpot['dvGroup'])))))
+	$errors[] = "Invalid D-STAR group.";
 
 if ($errors) {
 	echo json_encode(['success' => false, 'errors' => $errors]);
@@ -38,9 +52,12 @@ $spot = [
 	'fullCallsign' => strtoupper($inputSpot['fullCallsign']),
 	'spotter' => strtoupper($inputSpot['spotter']),
 	'mode' => $inputSpot['mode'],
-	'source' => $inputSpot['source'],
-	'frequency' => $inputSpot['frequency']
+	'source' => $inputSpot['source']
 ];
+
+if (@$inputSpot['frequency']) {
+	$spot['frequency'] = $inputSpot['frequency'];
+}
 
 if (@$inputSpot['summitRef']) {
 	$spot['summitRef'] = strtoupper($inputSpot['summitRef']);
@@ -48,6 +65,23 @@ if (@$inputSpot['summitRef']) {
 
 if (@$inputSpot['comment']) {
 	$spot['comment'] = $inputSpot['comment'];
+}
+
+// dv* fields (D-STAR event/node/reflector) are ignored unless mode is 'dstar', regardless of
+// what the client sent - source only names the feed (quadnet/ircddb/dstarusers).
+if ($inputSpot['mode'] == 'dstar') {
+	if (@$inputSpot['dvEvent']) {
+		$spot['dvEvent'] = $inputSpot['dvEvent'];
+	}
+	if (@$inputSpot['dvNode']) {
+		$spot['dvNode'] = strtoupper($inputSpot['dvNode']);
+	}
+	if (@$inputSpot['dvReflector']) {
+		$spot['dvReflector'] = strtoupper($inputSpot['dvReflector']);
+	}
+	if (@$inputSpot['dvGroup']) {
+		$spot['dvGroup'] = strtoupper(trim(preg_replace('/\s+/', ' ', $inputSpot['dvGroup'])));
+	}
 }
 
 // Send to backend

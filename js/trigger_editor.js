@@ -171,7 +171,13 @@ var editorFunctions = {
 	},
 	'bandslot': function(conditionName) {
 		return conditionBandslot(conditionName);
-	}
+	},
+	'dvEvent': function(conditionName) {
+		return conditionValuePicker(conditionName, objectToKeyValueList(dvEvents));
+	},
+	'dvNode': callsignEditor,
+	'dvReflector': callsignEditor,
+	'dvGroup': callsignEditor
 };
 
 $(function() {
@@ -443,7 +449,13 @@ function updateConditionValue(conditionName, value) {
 		}
 	}
 	if (arrayConditions[conditionName] && !Array.isArray(value)) {
-		value = uniq(value.trim().split(/[\s,]+/));
+		if (conditionName == 'dvGroup') {
+			// A Smart Group callsign may contain a space ("QNET20 C"), so only split on commas
+			// and line breaks
+			value = uniq(value.split(/[,\n]+/).map(function(x) { return x.trim(); }).filter(Boolean));
+		} else {
+			value = uniq(value.trim().split(/[\s,]+/));
+		}
 		if (value.length == 1)
 			value = value[0];
 	}
@@ -455,6 +467,12 @@ function updateConditionValue(conditionName, value) {
 		}
 	} else if (conditionName == "summitRegion" || conditionName == "summitRefs" || conditionName == "wwffDivision" || conditionName == "wwffRefs") {
 		// Reload regions and references
+		updateConditionsTable();
+	} else if (conditionName == "source" && currentTrigger.conditions.dvEvent === undefined &&
+		(dstarSources.indexOf(value) !== -1 || (Array.isArray(value) && value.some(v => dstarSources.indexOf(v) !== -1)))) {
+		// D-STAR source (quadnet/ircddb/dstarusers): default to "active" events only, so that
+		// link commands don't alert unless asked for
+		currentTrigger.conditions.dvEvent = "active";
 		updateConditionsTable();
 	}
 	hasChanges = true;
@@ -588,10 +606,13 @@ function validateTrigger() {
 			// Only one common mode condition is silly
 			isSilly = true;
 		} else if (currentTrigger.conditions.source &&
-			currentTrigger.conditions.source.some(source => 
-				source === "cluster" || source === "rbn" || source === "pskreporter"
+			currentTrigger.conditions.source.some(source =>
+				source === "cluster" || source === "rbn" || source === "pskreporter" || dstarSources.indexOf(source) !== -1
 			)) {
 			// Only one common source condition is silly
+			isSilly = true;
+		} else if (currentTrigger.conditions.dvEvent) {
+			// Only a D-STAR event condition matches all D-STAR activity
 			isSilly = true;
 		} else if (currentTrigger.conditions.continent ||
 				   currentTrigger.conditions.cq ||
@@ -718,6 +739,56 @@ function validateCondition(conditionName) {
 		currentTrigger.conditions[conditionName] = value;
 	}
 	
+	// Check D-STAR event
+	if (conditionName == 'dvEvent') {
+		if (!Array.isArray(value))
+			value = [value];
+		for (var i = 0; i < value.length; i++) {
+			if (!dvEvents[value[i]]) {
+				return "Invalid D-STAR event '" + value[i] + "'";
+			}
+		}
+		currentTrigger.conditions[conditionName] = value;
+	}
+
+	// Check D-STAR nodes/reflectors: "W4HFH-C", "W4HFH", "REF030-C", "REF030" (also accepts "REF030C" and "REF030 C")
+	if (conditionName == 'dvNode' || conditionName == 'dvReflector') {
+		if (!Array.isArray(value))
+			value = [value];
+		for (var i = 0; i < value.length; i++) {
+			var node = value[i].toUpperCase().replace(/[\s_\/]+/g, '-').replace(/^-+|-+$/g, '');
+			if (conditionName == 'dvReflector') {
+				// Allow the common "REF030C" notation
+				node = node.replace(/^([A-Z]{3}\d{3})([A-Z])$/, '$1-$2');
+			}
+			value[i] = node;
+			var nodeRegex = /^[A-Z0-9]{3,7}(-[A-Z])?$/;
+			if (!nodeRegex.test(node)) {
+				return "Invalid " + (conditionName == 'dvNode' ? "D-STAR repeater/node" : "D-STAR reflector") + " '" + value[i] + "'";
+			}
+		}
+		value.sort();
+		currentTrigger.conditions[conditionName] = value;
+	}
+
+	// Check D-STAR groups (QuadNet Smart Group / routing group callsign, e.g. "DSTAR1", "QNET20 C").
+	// Unlike dvReflector, no "-MODULE" normalization is applied; the single internal space (if any)
+	// is kept as-is.
+	if (conditionName == 'dvGroup') {
+		if (!Array.isArray(value))
+			value = [value];
+		for (var i = 0; i < value.length; i++) {
+			var group = value[i].toUpperCase().replace(/\s+/g, ' ').trim();
+			value[i] = group;
+			var groupRegex = /^[A-Z0-9]{1,8}( [A-Z0-9])?$/;
+			if (!groupRegex.test(group)) {
+				return "Invalid D-STAR group '" + group + "'";
+			}
+		}
+		value.sort();
+		currentTrigger.conditions[conditionName] = value;
+	}
+
 	// Check summit refs list
 	if (conditionName == 'summitRefs') {
 		if (!Array.isArray(value)) {
@@ -825,6 +896,10 @@ function addCondition(conditionName) {
 			currentTrigger.conditions['band'] = "";
 		if (!currentTrigger.options.clublog)
 			currentTrigger.options.clublog = {modes: 'all', status: ['confirmed', 'worked', 'verified'], callsign: username, date: 0};
+	} else if (conditionName == 'dvNode' || conditionName == 'dvReflector' || conditionName == 'dvGroup') {
+		// D-STAR conditions default to "active" events only, so that link commands don't alert unless asked for
+		if (currentTrigger.conditions['dvEvent'] === undefined)
+			currentTrigger.conditions['dvEvent'] = "active";
 	}
 	
 	if (conditionName == 'bandslot')

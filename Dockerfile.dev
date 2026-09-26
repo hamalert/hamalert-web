@@ -1,0 +1,80 @@
+# Development image for the HamAlert PHP web app.
+#
+# This image does NOT contain the application source. The source is
+# bind-mounted into the container at /var/www/html at `docker run` time (see
+# docker/dev/README.md and the sibling hamalert-server repo's local-dev
+# script), so that edits on the host are picked up immediately without a
+# rebuild. docker/dev/entrypoint.sh takes care of the one-time setup that
+# then needs to happen inside the mounted checkout (composer install,
+# generating config.inc.php).
+FROM docker.io/library/php:8.3-apache
+
+# --- System packages --------------------------------------------------------
+# $PHPIZE_DEPS is defined by the base php image (autoconf, gcc, make, ...)
+# and is what its own docs recommend installing before building extensions
+# with pecl/docker-php-ext-install.
+#   - git, zip, unzip: Composer needs one of zip/unzip (or the php zip ext,
+#     which we don't bother building) to unpack downloaded packages, and git
+#     as a fallback for VCS-sourced packages.
+#   - pkg-config, libssl-dev, libsasl2-dev: build deps for the mongodb PECL
+#     extension (TLS + SASL/Kerberos auth support in the driver).
+#   - (the curl extension used by ajax/simulateSpot.php is already part of
+#     the official php image, so it is not built here)
+#   - libfreetype6-dev, libpng-dev: build deps for the gd extension, used by
+#     myspot.php (imagecreatefrompng/imagepng/imagefttext for the "my spot"
+#     share-card image).
+RUN apt-get update && apt-get install -y --no-install-recommends \
+		$PHPIZE_DEPS \
+		git \
+		zip \
+		unzip \
+		pkg-config \
+		libssl-dev \
+		libsasl2-dev \
+		libfreetype6-dev \
+		libpng-dev \
+	&& rm -rf /var/lib/apt/lists/*
+
+# --- PHP extensions ----------------------------------------------------------
+# mongodb: pinned to 1.21.9, the newest 1.x release as of writing. This is a
+# deliberate 1.x pin, NOT "newest available": composer.lock resolves
+# mongodb/mongodb to 1.20.0, whose composer.json requires "ext-mongodb":
+# "^1.20.0" (i.e. >=1.20.0 <2.0.0). The mongodb PECL extension's 2.x line is a
+# breaking rewrite of the extension-level API that the mongodb/mongodb 1.x
+# PHP library (and therefore this app, without a composer.json/composer.lock
+# change) does not support. Do not bump this past the 1.x series without
+# also updating composer.json/composer.lock for mongodb/mongodb 2.x.
+RUN pecl install mongodb-1.21.9 \
+	&& docker-php-ext-enable mongodb
+
+# gd is part of the PHP source tree, so docker-php-ext-install handles
+# configuring/building it (using the build deps above).
+RUN docker-php-ext-configure gd --with-freetype \
+	&& docker-php-ext-install gd
+
+# --- Composer -----------------------------------------------------------------
+# Copy the composer binary from the official composer image rather than
+# installing it via a curl|sh installer script.
+COPY --from=docker.io/library/composer:2 /usr/bin/composer /usr/bin/composer
+
+# --- Apache -------------------------------------------------------------------
+# mod_rewrite: needed both for ajax/.htaccess and for the root-level
+# extensionless-URL rewrite below. mod_expires: the app ships css/.htaccess,
+# js/.htaccess and fonts/.htaccess with ExpiresActive directives; harmless in
+# dev, but enabling it avoids "Invalid command 'ExpiresActive'" noise.
+RUN a2enmod rewrite expires
+
+# Apache config equivalent of the root-level extensionless-URL rewrite that
+# production serves from outside this repo (see tools/router.php for the
+# behaviour being replicated, and docker/dev/apache.conf for details/comments).
+COPY docker/dev/apache.conf /etc/apache2/conf-enabled/hamalert-dev.conf
+
+# --- Entrypoint -----------------------------------------------------------------
+COPY docker/dev/entrypoint.sh /usr/local/bin/hamalert-dev-entrypoint.sh
+RUN chmod +x /usr/local/bin/hamalert-dev-entrypoint.sh
+
+# NOTE: intentionally no `COPY . /var/www/html` here — the app source is
+# bind-mounted at runtime (see docker run -v in docker/dev/README.md).
+
+ENTRYPOINT ["hamalert-dev-entrypoint.sh"]
+CMD ["apache2-foreground"]
