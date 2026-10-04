@@ -372,17 +372,17 @@ $(function() {
 						</tr>
 						<tr>
 							<td><tt>frequency</tt></td>
-							<td>in MHz</td>
+							<td>in MHz **</td>
 							<td><strong>14.062</strong></td>
 						</tr>
 						<tr>
 							<td><tt>band</tt></td>
-							<td>40m, 20m, 2m, 70cm etc.</td>
+							<td>40m, 20m, 2m, 70cm etc. **</td>
 							<td><strong>20m</strong></td>
 						</tr>
 						<tr>
 							<td><tt>mode</tt></td>
-							<td>cw, ssb, fm, dv, am, psk, rtty, jt, msk</td>
+							<td>cw, ssb, fm, dv, am, psk, rtty, jt, msk, dstar **</td>
 							<td><strong>cw</strong></td>
 						</tr>
 						<tr>
@@ -469,7 +469,7 @@ $(function() {
 						</tr>
 						<tr>
 							<td><tt>source</tt></td>
-							<td>Spot source: 'rbn', 'sotawatch', 'cluster', 'pskreporter', 'pota' or 'wwff'</td>
+							<td>Spot source: 'rbn', 'sotawatch', 'cluster', 'pskreporter', 'pota', 'wwff', or the D-STAR feed that reported it - 'quadnet', 'ircddb' or 'dstarusers' (mode is 'dstar' for all three)</td>
 							<td><strong>rbn</strong></td>
 						</tr>
 						<tr>
@@ -547,10 +547,49 @@ $(function() {
 							<td>Park reference *</td>
 							<td><strong>EAFF-0065</strong></td>
 						</tr>
+						<tr>
+							<td><tt>dvEvent</tt></td>
+							<td>D-STAR event: 'active' (heard on a repeater/reflector module) or 'linked' (link command sent) ***</td>
+							<td><strong>active</strong></td>
+						</tr>
+						<tr>
+							<td><tt>dvNode</tt></td>
+							<td>D-STAR repeater/hotspot callsign and module ***</td>
+							<td><strong>W4HFH-C</strong></td>
+						</tr>
+						<tr>
+							<td><tt>dvReflector</tt></td>
+							<td>D-STAR reflector and module (if linked) ***</td>
+							<td><strong>REF030-C</strong></td>
+						</tr>
+						<tr>
+							<td><tt>dvGroup</tt></td>
+							<td>QuadNet Smart Group (routing group) callsign, if the station keyed up with one ***</td>
+							<td><strong>DSTAR1</strong></td>
+						</tr>
+						<tr>
+							<td><tt>dvGroupName</tt></td>
+							<td>Human-readable name of the QuadNet Smart Group ***</td>
+							<td><strong>QuadNet Array</strong></td>
+						</tr>
+						<tr>
+							<td><tt>dvSuffix</tt></td>
+							<td>D-STAR radio suffix (if set) ***</td>
+							<td><strong>ID51</strong></td>
+						</tr>
+						<tr>
+							<td><tt>dvDuration</tt></td>
+							<td>D-STAR transmission duration in seconds (if known) ***</td>
+							<td><strong>12.3</strong></td>
+						</tr>
 					</tbody>
 				</table>
 				
 				<p class="help-text">* SOTA summit information is available for spots from SOTAwatch and from the DX cluster (if the cluster spot comment includes a valid SOTA reference). IOTA and WWFF references are extracted from SOTAwatch and DX cluster spot comments; only valid IOTA/WWFF/POTA references according to the relevant directories will be considered.</p>
+				
+				<p class="help-text">** For D-STAR spots, frequency and band are taken from the repeater's registered frequency (QuadNet/ircDDB repeater lists). If the repeater is not listed, frequency is absent and band is guessed from the module letter (bandIsGuessed); if that fails band is 'unknown'.</p>
+				
+				<p class="help-text">*** Only present for D-STAR spots (mode 'dstar').</p>
 			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->

@@ -56,7 +56,43 @@ include('settings_begin.inc.php') ?>
 		(i.e. spots that occurred before a trigger was set up).</li>
 	<li>For PSK reporter spots, a quorum of three different spotters must be reached for the same combination of callsign/band/mode until spots are processed (spots are held back until the quorum is reached). This is to prevent erroneous alerts due to spotters with a misconfigured band.</li>
 	<li>Note that HamAlert ignores SOTAwatch spots that contain the word “test” or “testing”.</li>
+	<li>D-STAR alerts are only generated for voice transmissions and reflector link commands that appear in the QuadNet/ircDDB “last heard” logs
+		(at most one alert per callsign/node/reflector/event within 15 minutes). See <a href="#dstar">How do D-STAR alerts work?</a> for details.</li>
 </ul>
+
+
+<a name="dstar"></a><h3>How do D-STAR alerts work?</h3>
+
+<p>D-STAR alerts (mode “D-STAR”) are <em>presence</em> alerts rather than DX spots: they are generated from the “last heard” logs of the
+	<a href="https://openquad.net">QuadNet</a> and <a href="https://ircddb.net">ircDDB</a> networks, and tell you that a station has become active on,
+	or linked to, a D-STAR repeater module or reflector module. REF/XRF/DCS/XLX reflector activity, which QuadNet and ircDDB never see, is
+	additionally picked up from <a href="https://www.dstarusers.org/lastheard.php">dstarusers.org</a>, whose “last heard” page is fed by DStarMonitor
+	agents running on the reflectors themselves. Each of the three feeds is its own source (“D-STAR (QuadNet)”, “D-STAR (ircDDB)”,
+	“D-STAR (dstarusers.org)”); a trigger with no Source condition selected matches D-STAR spots from any of them, and the D-STAR event/node/reflector
+	conditions below apply the same way to all three. Please note the following:</p>
+
+<ul>
+	<li>Event “<strong>active</strong>” means that a voice transmission from the station was heard on a repeater module (or on a reflector module,
+		if the repeater was linked to a reflector at the time).</li>
+	<li>Event “<strong>linked</strong>” means that the station sent a link command to a reflector by radio (e.g. “REF030CL”).
+		Hotspots that link to a reflector automatically at boot, or links made from the Pi-Star web page, are not seen by the network and do not generate alerts.</li>
+	<li>Info, echo and unlink commands never generate alerts.</li>
+	<li>Only one alert is generated per callsign, node, reflector and event within 15 minutes.</li>
+	<li>Stations on the ircddb.net network only appear if they have sent the “VIS ON” command at least once.</li>
+	<li>D-STAR spots include the repeater's registered frequency and band whenever the node is listed in the QuadNet/ircDDB repeater lists, so band conditions and limits per band apply to them as usual. If the node is not listed, no frequency is shown; a band guessed from the module letter is still used for band conditions and limits, and if even that fails the band is “unknown”.</li>
+	<li>Use the “D-STAR repeater/node” and “D-STAR reflector” trigger conditions to restrict alerts to certain repeaters/hotspots or reflectors.
+		Values may be entered with or without the module letter, e.g. “REF030” matches “REF030-A”, “REF030-B”, “REF030-C” etc.,
+		whereas “REF030-C” only matches that module.</li>
+	<li>dstarusers.org reports a hotspot/dongle login connected directly to a reflector (not yet transmitting) without a module letter, since it
+		has no way to know which module such a user will end up on; these are not alertable events and never generate a spot. Once the user
+		actually transmits, a proper module-specific report follows (e.g. “REF030-C”) and is alerted normally.</li>
+</ul>
+
+<p>QuadNet also supports “Smart Groups”: instead of routing to a specific repeater or reflector module, a station can key up with a routing-group
+	callsign (e.g. “DSTAR1” or “QNET20 C”) in the radio's UR field, and QuadNet delivers the transmission to an appropriate node on that group's
+	behalf. These show up as event “active” spots with a node but no reflector. Use the “D-STAR group” trigger condition, with the group callsign
+	exactly as it would be typed into the radio, to alert on a specific Smart Group; see <a href="https://www.openquad.net/starnet.php">the QuadNet
+	Smart Group list</a> for the available groups.</p>
 
 
 <h3>What is the difference between the “Callsign” and “Full callsign” conditions?</h3>

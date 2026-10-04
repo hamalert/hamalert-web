@@ -35,7 +35,11 @@ var conditionLabels = {
 	'summitRefs': 'Summit reference list',
 	'wwffDivision': 'Park division',
 	'wwffRef': 'Park reference',
-	'wwffRefs': 'Park reference list'
+	'wwffRefs': 'Park reference list',
+	'dvEvent': 'D-STAR event',
+	'dvNode': 'D-STAR repeater/node',
+	'dvReflector': 'D-STAR reflector',
+	'dvGroup': 'D-STAR group'
 };
 
 var conditionsOrder = [
@@ -48,6 +52,7 @@ var conditionsOrder = [
 	'iotaGroupRef',
 	'summitAssociation', 'summitRegion', 'summitRef', 'summitRefs', 'summitPointsFrom', 'summitActivationsFrom',
 	'wwffDivision', 'wwffRef', 'wwffRefs',
+	'dvEvent', 'dvNode', 'dvReflector', 'dvGroup',
 	'notCallsign', 'notFullCallsign', 'notSpotter', 'notPrefix'
 ];
 
@@ -61,6 +66,7 @@ var conditionsGroups = [
 	{title: 'IOTA', conditions: ['iotaGroupRef']},
 	{title: 'SOTA', conditions: ['summitAssociation', 'summitRegion', 'summitRef', 'summitRefs', 'summitPointsFrom', 'summitActivationsFrom']},
 	{title: 'WWFF/POTA', conditions: ['wwffDivision', 'wwffRef', 'wwffRefs']},
+	{title: 'D-STAR', conditions: ['dvEvent', 'dvNode', 'dvReflector', 'dvGroup']},
 	{title: 'Callsign exclusions', conditions: ['notCallsign', 'notFullCallsign', 'notSpotter', 'notPrefix']}
 ];
 
@@ -237,6 +243,25 @@ var arrayConditions = {
 		maxDisplaySmall: 2,
 		suffix: 'parks'
 	},
+	'dvEvent': {
+		maxDisplay: 2,
+		suffix: 'events'
+	},
+	'dvNode': {
+		maxDisplay: 3,
+		maxDisplaySmall: 3,
+		suffix: 'nodes'
+	},
+	'dvReflector': {
+		maxDisplay: 3,
+		maxDisplaySmall: 3,
+		suffix: 'reflectors'
+	},
+	'dvGroup': {
+		maxDisplay: 3,
+		maxDisplaySmall: 3,
+		suffix: 'groups'
+	}
 };
 
 var sources = {
@@ -245,8 +270,17 @@ var sources = {
 	'cluster': 'Cluster',
 	'pskreporter': 'PSK Reporter',
 	'pota': 'POTA',
-	'wwff': 'WWFF Spotline'
+	'wwff': 'WWFF Spotline',
+	// D-STAR presence spots come from three feeds; mode is always 'dstar' (see the 'modes' map
+	// below), so a trigger with no source condition matches all three. Grouped together here so
+	// they list adjacently in the source picker.
+	'quadnet': 'D-STAR (QuadNet)',
+	'ircddb': 'D-STAR (ircDDB)',
+	'dstarusers': 'D-STAR (dstarusers.org)'
 };
+
+// The three source values that carry D-STAR presence spots (mode 'dstar')
+var dstarSources = ['quadnet', 'ircddb', 'dstarusers'];
 
 var modes = {
 	'cw': 'CW',
@@ -271,7 +305,8 @@ var modes = {
 	'sstv': 'SSTV',
 	'olivia': 'Olivia',
 	'fst4': 'FST4',
-	'data': 'DATA'
+	'data': 'DATA',
+	'dstar': 'D-STAR'
 };
 
 var continents = {
@@ -478,9 +513,15 @@ var statesShort = {
 	"CA_YT": "YT"
 };
 
+var dvEvents = {
+	'active': 'Active (voice heard)',
+	'linked': 'Linked (link command sent)'
+};
+
 var conditionValueMaps = {
 	'source': sources,
 	'mode': modes,
+	'dvEvent': dvEvents,
 	'continent': continents,
 	'spotterContinent': continents,
 	'band': bands,
@@ -567,7 +608,15 @@ var conditionHelpTexts = {
 	'qsl': '<small>LoTW: callsign has uploaded QSOs within the last 12 months according to <a href="https://lotw.arrl.org/lotw-user-activity.csv" target="_blank">this list</a>.<br />eQSL: callsign is on <a href="https://www.eqsl.cc/qslcard/DownloadedFiles/AGMemberList.txt" target="_blank">AG member list</a>.</small>',
 	'state': '<small>Data obtained from FCC ULS and Government of Canada databases, updated weekly. Park state from POTA spots may override the callsign\'s home state.</small>',
 	'spotterState': '<small>Data obtained from FCC ULS and Government of Canada database, updated weekly.</small>',
-	'wwffRef': '<small>If you want to match any park reference in the division, then please don\'t “Select All” – instead, simply remove the “Park reference” condition and leave only the division.</small>'
+	'wwffRef': '<small>If you want to match any park reference in the division, then please don\'t “Select All” – instead, simply remove the “Park reference” condition and leave only the division.</small>',
+	'source': '<small>D-STAR presence is reported by three separate feeds (QuadNet, ircDDB and dstarusers.org); leave Source unselected, or select all three, to match D-STAR spots from any of them. The D-STAR event/node/reflector conditions apply to all three feeds the same way.</small>',
+	'dvEvent': '<em>Active</em>: a voice transmission from the callsign was heard on the repeater/node (and reflector, if linked). <em>Linked</em>: the callsign sent a link command to a reflector by radio.<br /><small>D-STAR alerts are presence alerts based on the QuadNet, ircDDB and dstarusers.org “last heard” logs; see the <a href="help#dstar">Help</a> page.</small>',
+	'dvNode': 'The D-STAR repeater or hotspot callsign, optionally with the module letter after a hyphen.<br />Examples: W4HFH-C (module C only), W4HFH (any module).',
+	'dvNode_array': 'The D-STAR repeater or hotspot callsigns, optionally with the module letter after a hyphen, separated with commas, spaces or line breaks.<br />Examples: W4HFH-C (module C only), W4HFH (any module).',
+	'dvReflector': 'The D-STAR reflector, optionally with the module letter after a hyphen.<br />Examples: REF030-C (module C only), REF030 (any module). XRF, DCS and XLX reflectors work the same way.',
+	'dvReflector_array': 'The D-STAR reflectors, optionally with the module letter after a hyphen, separated with commas, spaces or line breaks.<br />Examples: REF030-C (module C only), REF030 (any module).',
+	'dvGroup': 'The QuadNet Smart Group (routing group) callsign the station keyed up with in the UR field, e.g. DSTAR1 (QuadNet Array) or QNET20 C (Tech Chat). See <a href="https://www.openquad.net/starnet.php" target="_blank">https://www.openquad.net/starnet.php</a> for the list.',
+	'dvGroup_array': 'The QuadNet Smart Group (routing group) callsign the station keyed up with in the UR field, e.g. DSTAR1 (QuadNet Array) or QNET20 C (Tech Chat), separated with commas or line breaks (not spaces, as a group callsign may contain one). See <a href="https://www.openquad.net/starnet.php" target="_blank">https://www.openquad.net/starnet.php</a> for the list.'
 };
 
 var daysOfWeek = [

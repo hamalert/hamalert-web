@@ -8,7 +8,7 @@ include('settings_begin.inc.php') ?>
 		// Load modes and sources
 		$('#modeTd').append(makeDynamicSelect('mode', modes));
 		$('#sourceTd').append(makeDynamicSelect('source', sources));
-		
+
 		$('.selectpicker').selectpicker('render');
 		$('input').keydown(function() {
 			changeSpot();
@@ -16,22 +16,48 @@ include('settings_begin.inc.php') ?>
 		$('select').change(function() {
 			changeSpot();
 		});
-		
+
+		// The D-STAR fields (event/node/reflector) only make sense for mode 'dstar'; grey them
+		// out otherwise. Picking one of the three D-STAR sources implies D-STAR, so switch mode
+		// to it automatically - but the actual enabling/disabling is keyed on mode, not source.
+		$('#mode').change(updateDstarFields);
+		$('#source').change(function() {
+			if (dstarSources.indexOf($('#source').val()) !== -1 && $('#mode').val() !== 'dstar') {
+				$('#mode').val('dstar');
+				$('#mode').selectpicker('refresh');
+				updateDstarFields();
+			}
+		});
+		updateDstarFields();
+
 		$(document).keypress(function(e) {
 			if (e.which == 13) {
 				sendSpot();
 			}
 		});
 	});
-	
+
 	function changeSpot() {
 		$('#spotSent').hide();
 	}
-	
+
+	// Enables the D-STAR fields when mode is 'dstar', and disables (and clears) them otherwise
+	function updateDstarFields() {
+		var isDstar = ($('#mode').val() === 'dstar');
+		$('#dvNode, #dvReflector, #dvGroup').prop('disabled', !isDstar);
+		$('#dvEvent').prop('disabled', !isDstar).selectpicker('refresh');
+		if (!isDstar) {
+			$('#dvNode').val('');
+			$('#dvReflector').val('');
+			$('#dvGroup').val('');
+			$('#dvEvent').val('').selectpicker('refresh');
+		}
+	}
+
 	function sendSpot() {
 		$('#spotSent').hide();
 		$('#spotAlert').hide();
-		
+
 		var spot = {
 			fullCallsign: $('#fullCallsign').val(),
 			frequency: $('#frequency').val(),
@@ -39,10 +65,15 @@ include('settings_begin.inc.php') ?>
 			mode: $('#mode').val(),
 			source: $('#source').val(),
 			spotter: $('#spotter').val(),
-			comment: $('#comment').val()
+			comment: $('#comment').val(),
+			dvEvent: $('#dvEvent').val(),
+			dvNode: $('#dvNode').val(),
+			dvReflector: $('#dvReflector').val(),
+			dvGroup: $('#dvGroup').val()
 		};
-		
-		if (!spot.fullCallsign || !spot.frequency || !spot.mode || !spot.source || !spot.spotter) {
+
+		// Frequency is optional for D-STAR spots (mode 'dstar'); dvNode is required instead
+		if (!spot.fullCallsign || (spot.mode == 'dstar' ? !spot.dvNode : !spot.frequency) || !spot.mode || !spot.source || !spot.spotter) {
 			$('#fillInFieldsAlert').show();
 			return;
 		}
@@ -133,6 +164,7 @@ input::-webkit-inner-spin-button {
 						<input type="number" step="any" class="form-control" id="frequency" placeholder="14.060" />
 						<div class="input-group-addon">MHz</div>
 					</div>
+					<p class="help-block">optional for D-STAR spots (looked up from the node's registered frequency when omitted)</p>
 				</td>
 			</tr>
 			<tr>
@@ -156,6 +188,32 @@ input::-webkit-inner-spin-button {
 				<th>Comment</th>
 				<td><input type="text" class="form-control" id="comment" placeholder="" />
 				<p class="help-block">The comment field is parsed for WWFF, POTA and SOTA references.</p></td>
+			</tr>
+			<tr>
+				<th>D-STAR event</th>
+				<td>
+					<select id="dvEvent" class="selectpicker" data-width="auto">
+						<option value=""></option>
+						<option value="active">active</option>
+						<option value="linked">linked</option>
+					</select>
+					<p class="help-block">optional, only for mode D-STAR</p>
+				</td>
+			</tr>
+			<tr>
+				<th>D-STAR node</th>
+				<td><input type="text" class="form-control" id="dvNode" placeholder="W4HFH-C" style="text-transform: uppercase" />
+				<p class="help-block">required for mode D-STAR (repeater/hotspot callsign and module)</p></td>
+			</tr>
+			<tr>
+				<th>D-STAR reflector</th>
+				<td><input type="text" class="form-control" id="dvReflector" placeholder="REF030-C" style="text-transform: uppercase" />
+				<p class="help-block">optional, only for mode D-STAR</p></td>
+			</tr>
+			<tr>
+				<th>D-STAR group</th>
+				<td><input type="text" class="form-control" id="dvGroup" placeholder="DSTAR1" style="text-transform: uppercase" />
+				<p class="help-block">optional, only for mode D-STAR (e.g. DSTAR1)</p></td>
 			</tr>
 		</tbody>
 	</table>
