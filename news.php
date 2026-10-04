@@ -11,7 +11,7 @@ include('settings_begin.inc.php') ?>
 </div>
 */ ?>
 
-<h3>2026-09-10</h3>
+<h3>2026-10-04</h3>
 
 <ul>
 	<li>D-STAR presence alerts: HamAlert now generates spots when a station becomes active on, or links to, a D-STAR repeater module or reflector module
