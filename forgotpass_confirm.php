@@ -10,8 +10,8 @@ if (!checkHash()) {
 	if ($_POST) {
 		if ($_POST['password'] !== $_POST['password2']) {
 			$errors[] = "The passwords entered do not match.";
-		} else if (strlen($_POST['password']) < 6) {
-			$errors[] = "The password must be at least 6 characters long.";
+		} else if (strlen($_POST['password']) < 8) {
+			$errors[] = "The password must be at least 8 characters long.";
 		}
 	
 		if (!$errors) {

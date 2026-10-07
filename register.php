@@ -30,8 +30,8 @@ if ($_POST) {
 		if ($password !== $password2) {
 			$errors[] = "The passwords do not match.";
 		}
-		if (strlen($password) < 6) {
-			$errors[] = "The password must be at least 6 characters long.";
+		if (strlen($password) < 8) {
+			$errors[] = "The password must be at least 8 characters long.";
 		}
 		if (trim(strtolower($riddle)) !== "qrp") {
 			$errors[] = "Please answer the question correctly.";
@@ -111,7 +111,7 @@ EOD;
 	<div class="form-group">
 		<label for="username">Password</label>
 		<input type="password" class="form-control" id="password" name="password" />
-		<p class="help-block">Minimum length: 6 characters.</p>
+		<p class="help-block">Minimum length: 8 characters.</p>
 	</div>
 	<div class="form-group">
 		<label for="username">Confirm password</label>
