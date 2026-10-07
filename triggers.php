@@ -104,7 +104,7 @@ function deleteTrigger(button) {
 	tr.addClass('info');
 	BootstrapDialog.show({
 		title: 'Delete trigger?',
-		message: 'Are you sure you want to delete the trigger "' + comment + '"?',
+		message: 'Are you sure you want to delete the trigger "' + htmlEscape(comment) + '"?',
 		type: BootstrapDialog.TYPE_DANGER,
 		buttons: [{
 			label: 'Cancel',
