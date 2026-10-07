@@ -3,18 +3,22 @@ $loginOptional = true;
 require_once("db.inc.php");
 
 $errors = [];
+$signup = null;
 
-if (@$_GET['t']) {
-	$signup = getSignup($_GET['t']);
+// Tokens are 32 hex chars from bin2hex(). Reject arrays so query operators
+// such as t[$gt] cannot be passed through to MongoDB.
+$token = $_GET['t'] ?? '';
+if (!is_string($token) || !preg_match('/^[a-f0-9]{32}$/', $token)) {
+	$errors[] = "Invalid link.";
+} else {
+	$signup = getSignup($token);
 	if (!$signup) {
 		$errors[] = "Invalid/expired link, or already confirmed. Try <a href=\"login\">logging in</a> with the username and the password that you have chosen. If you cannot log in, try <a href=\"register\">registering</a> again.";
 	}
-} else {
-	$errors[] = "Invalid link.";
 }
 
 if ($signup && @$_POST['confirm']) {
-	$delres = deleteSignup($_GET['t']);
+	$delres = deleteSignup($token);
 	if ($delres->getDeletedCount() == 1) {
 		try {
 			if (!createUser($signup['username'], $signup['password'], $signup['email'])) {
