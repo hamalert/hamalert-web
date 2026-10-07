@@ -21,13 +21,13 @@ $errors = array();
 $warnings = array();
 $infos = array();
 if ($_POST) {
-	$enableAlerts = $_POST['enableAlerts'];
-	$appTitleFormat = trim($_POST['appTitleFormat'] ?? "");
-	$appBodyFormat = trim($_POST['appBodyFormat'] ?? "");
-	$threemaId = strtoupper(trim($_POST['threemaId'] ?? ""));
-	$telnetPassword = $_POST['telnetPassword'];
-	$notificationUrl = $_POST['notificationUrl'];
-	$notificationMethod = $_POST['notificationMethod'];
+	$enableAlerts = @$_POST['enableAlerts'];
+	$appTitleFormat = trim(@$_POST['appTitleFormat'] ?? "");
+	$appBodyFormat = trim(@$_POST['appBodyFormat'] ?? "");
+	$threemaId = strtoupper(trim(@$_POST['threemaId'] ?? ""));
+	$telnetPassword = @$_POST['telnetPassword'];
+	$notificationUrl = @$_POST['notificationUrl'];
+	$notificationMethod = @$_POST['notificationMethod'];
 	
 	if ($threemaId) {
 		if (!preg_match("/^[A-Z0-9]{8}$/", $threemaId)) {
@@ -58,7 +58,8 @@ if ($_POST) {
 		$validationCode = calcThreemaValidationCode($threemaId);
 		
 		if (@$_POST['threemaValidationCode']) {
-			if ($validationCode === $_POST['threemaValidationCode']) {
+			$submittedCode = normalizeThreemaValidationCode($_POST['threemaValidationCode']);
+			if (hash_equals(normalizeThreemaValidationCode($validationCode), $submittedCode)) {
 				$threemaMustValidate = false;
 			} else {
 				$errors[] = "Threema verification code incorrect.";
@@ -118,13 +119,36 @@ if ($_POST) {
 }
 
 function calcThreemaValidationCode($threemaId) {
-	// Calculate a (fixed) 6 digit validation code for a given Threema ID using
-	// a secret HMAC key
+	// 10-character code (50 bits) from a secret HMAC, grouped for reading.
+	// Crockford base32 leaves out I, L, O and U, which are easy to misread.
 	global $config;
+	$alphabet = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 	$hash = hash_hmac("sha256", $threemaId, $config['threema_validation_hashkey'], true);
-	
-	// Take first four bytes as integer and return modulo 1000000 result
-	return sprintf("%06d", unpack("N", $hash)[1] % 1000000);
+
+	$code = '';
+	$value = 0;
+	$bits = 0;
+	$offset = 0;
+	while (strlen($code) < 10) {
+		$value = (($value & ((1 << $bits) - 1)) << 8) | ord($hash[$offset]);
+		$bits += 8;
+		$offset++;
+		while ($bits >= 5 && strlen($code) < 10) {
+			$bits -= 5;
+			$code .= $alphabet[($value >> $bits) & 31];
+		}
+	}
+
+	return substr($code, 0, 5) . '-' . substr($code, 5);
+}
+
+function normalizeThreemaValidationCode($code) {
+	if (!is_string($code)) {
+		return '';
+	}
+	$code = strtoupper(preg_replace('/[\s-]+/', '', $code));
+	// Accept the usual misreadings of the characters the alphabet omits.
+	return strtr($code, ['O' => '0', 'I' => '1', 'L' => '1']);
 }
 
 function sendThreemaMessage($id, $message) {
@@ -298,7 +322,7 @@ $(function() {
 		<?php if (@$threemaMustValidate): ?>
 		<div class="form-group has-warning">
 			<label class="control-label" for="threemaValidationCode">Threema verification code (sent to you via Threema)</label>
-			<input type="text" class="form-control" id="threemaValidationCode" name="threemaValidationCode" placeholder="123456" />
+			<input type="text" class="form-control" id="threemaValidationCode" name="threemaValidationCode" placeholder="7K2NP-4HQ9R" autocomplete="off" spellcheck="false" style="text-transform: uppercase" />
 		</div>
 		<?php endif; ?>
 	</fieldset>
