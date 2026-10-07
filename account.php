@@ -7,7 +7,10 @@ refreshUser();
 $errors = array();
 if (@$_POST) {
 	if (@$_GET['changePassword']) {
-		if ($_POST['password'] !== $_POST['password2']) {
+		$currentPassword = $_POST['currentPassword'] ?? '';
+		if (!is_string($currentPassword) || !password_verify($currentPassword, $_SESSION['user']['password'])) {
+			$errors[] = "The current password is incorrect.";
+		} else if ($_POST['password'] !== $_POST['password2']) {
 			$errors[] = "The passwords entered do not match.";
 		} else if (strlen($_POST['password']) < 8) {
 			$errors[] = "The password must be at least 8 characters long.";
@@ -35,13 +38,20 @@ if (@$_POST) {
 			}
 		}
 	} else if (@$_GET['updateAccountEmail']) {
-		if (!filter_var($_POST['accountEmail'], FILTER_VALIDATE_EMAIL)) {
+		$accountEmail = $_POST['accountEmail'] ?? '';
+		if (!is_string($accountEmail) || !filter_var($accountEmail, FILTER_VALIDATE_EMAIL)) {
 			$errors[] = "Please enter a valid account email address.";
+		} else if (!isAccountEmailAvailable($accountEmail, $_SESSION['user']['_id'])) {
+			$errors[] = "An account for this email address already exists.";
 		} else {
-			sendChangeAccountEmail($_POST['accountEmail']);
+			sendChangeAccountEmail($accountEmail);
 			$changeEmailOk = true;
 		}
 	}
+}
+
+if (@$_GET['accountEmailTaken']) {
+	$errors[] = "An account for this email address already exists.";
 }
 
 $mySpotHash = substr(hash_hmac("sha256", $_SESSION['user']['username'], $config['myspot_hashkey']), 0, 16);
@@ -51,8 +61,10 @@ function sendChangeAccountEmail($email) {
 	global $config;
 	
 	$username = $_SESSION['user']['username'];
-	$hash = substr(hash_hmac('sha256', "$username$email", $config['change_email_hashkey']), 0, 32);
+	$ts = time();
+	$hash = substr(hash_hmac('sha256', $username . "\n" . $email . "\n" . $ts, $config['change_email_hashkey']), 0, 32);
 	$emailUrl = urlencode($email);
+	$hours = intdiv($config['forgotpass_link_expiration'], 3600);
 
 	$body = <<<EOD
 Hello,
@@ -60,7 +72,9 @@ Hello,
 you have requested your account email address to be changed on HamAlert.
 Please click the following link to effect the change:
 
-{$config['self_url']}/changeEmail_confirm?u=$username&e=$emailUrl&h=$hash
+{$config['self_url']}/changeEmail_confirm?u=$username&e=$emailUrl&ts=$ts&h=$hash
+
+This link expires after $hours hour(s).
 
 73,
 
@@ -68,7 +82,27 @@ The HamAlert team
 
 EOD;
 
-	mail($email, "HamAlert account email change", $body, "From: {$config['mail_from']}\r\nReturn-Path: {$config['mail_return_path']}");
+	$headers = "From: {$config['mail_from']}\r\nReturn-Path: {$config['mail_return_path']}";
+	mail($email, "HamAlert account email change", $body, $headers);
+
+	$oldEmail = $_SESSION['user']['accountEmail'] ?? '';
+	if ($oldEmail && strcasecmp($oldEmail, $email) !== 0) {
+		$notice = <<<EOD
+Hello,
+
+a request was made to change the email address on your HamAlert account $username to $email.
+
+If you made this request, you can ignore this message. The change takes effect only after the new address is confirmed, and the confirmation link expires after $hours hour(s).
+
+If you did not make this request, do not confirm it. Your address will stay the same unless the confirmation link is opened while you are logged in.
+
+73,
+
+The HamAlert team
+
+EOD;
+		mail($oldEmail, "HamAlert account email change requested", $notice, $headers);
+	}
 }
 
 ?>
@@ -99,7 +133,7 @@ EOD;
 <?php if (@$changeEmailOk): ?>
 <div class="alert alert-info alert-dismissible" role="alert">
 	<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	Please check your email and click the link in the confirmation message to finalize your account email address change.
+	Please check the new email address and click the link in the confirmation message. A notice was also sent to your current address. The link expires after <?php echo intdiv($config['forgotpass_link_expiration'], 3600) ?> hours.
 </div>
 <?php endif; ?>
 
@@ -120,7 +154,7 @@ EOD;
 			<?php if (@$changeEmailOk): ?>
 			<input type="email" class="form-control" id="accountEmail" name="accountEmail" value="<?php echo htmlspecialchars(@$_POST['accountEmail']) ?>" disabled="disabled">
 			<?php else: ?>
-			<input type="email" class="form-control" id="accountEmail" name="accountEmail" value="<?php echo htmlspecialchars(@$_SESSION['user']['accountEmail']) ?>">
+			<input type="email" class="form-control" id="accountEmail" name="accountEmail" value="<?php echo htmlspecialchars(is_string($_POST['accountEmail'] ?? null) ? $_POST['accountEmail'] : (@$_SESSION['user']['accountEmail'] ?? '')) ?>">
 			<?php endif; ?>
 			<p class="help-block">The account email address is only used for important announcements regarding HamAlert, and to retrieve lost passwords. It will not be used for alerts.</p>
 		</div>
@@ -188,12 +222,16 @@ EOD;
 
 	<form class="limit-width" method="post" action="?changePassword=1">
 		<div class="form-group">
-			<label for="password">New password</label>
-			<input type="password" class="form-control" id="password" name="password">
+			<label for="currentPassword">Current password</label>
+			<input type="password" class="form-control" id="currentPassword" name="currentPassword" autocomplete="current-password">
 		</div>
 		<div class="form-group">
-			<label for="password">Confirm password</label>
-			<input type="password" class="form-control" id="password2" name="password2">
+			<label for="password">New password</label>
+			<input type="password" class="form-control" id="password" name="password" autocomplete="new-password">
+		</div>
+		<div class="form-group">
+			<label for="password2">Confirm password</label>
+			<input type="password" class="form-control" id="password2" name="password2" autocomplete="new-password">
 		</div>
 		<button type="submit" class="btn btn-primary">Save</button>
 	</form>

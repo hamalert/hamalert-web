@@ -7,7 +7,7 @@ $config = array(
 	'mongodb_uri' => 'mongodb://hamalert:<redacted>@127.0.0.1:27017/hamalert',
 	'self_url' => 'https://hamalert.org',
 	'forgotpass_hashkey' => '<redacted>',
-	'forgotpass_link_expiration' => 86400,
+	'forgotpass_link_expiration' => 3600,
 	'mail_from' => 'HamAlert <do-not-reply@hamalert.org>',
 	'mail_return_path' => '<do-not-reply@hamalert.org>',
 

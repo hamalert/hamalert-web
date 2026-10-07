@@ -13,6 +13,7 @@ session_start([
 
 /* setup error/exception handling */
 function exception_handler($exception) {
+	global $config;
 	syslog(LOG_ERR, "Uncaught exception: $exception");
 
 	$lastSendFlag = "/tmp/last_exception_mail";
@@ -27,6 +28,7 @@ function exception_handler($exception) {
 }
 
 function error_handler($errno, $errstr, $errfile, $errline) {
+	global $config;
 	syslog(LOG_ERR, "ERROR: str: $errstr, file: $errfile, line: $errline");
 
 	$lastSendFlag = "/tmp/last_error_mail";
@@ -169,6 +171,14 @@ function getUserForAccountEmail($accountEmail) {
 	global $db;
 	
 	return $db->users->findOne(['accountEmail' => $accountEmail]);
+}
+
+function isAccountEmailAvailable($accountEmail, $exceptUserId = null) {
+	$user = getUserForAccountEmail($accountEmail);
+	if (!$user) {
+		return true;
+	}
+	return $exceptUserId !== null && (string)$user['_id'] === (string)$exceptUserId;
 }
 
 function getSignup($token) {
