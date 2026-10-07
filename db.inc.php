@@ -5,7 +5,11 @@ use JsonRPC\Client;
 require_once("config.inc.php");
 require_once(__DIR__ . "/vendor/autoload.php");
 
-session_start(['gc_maxlifetime' => 86400]);
+session_start([
+	'gc_maxlifetime' => 86400,
+	'cookie_secure' => true,
+	'cookie_httponly' => true,
+]);
 
 /* setup error/exception handling */
 function exception_handler($exception) {
