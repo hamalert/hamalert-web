@@ -66,9 +66,15 @@ if (@$isApi) {
 
 	// API requests must have username/password POST parameters
 	if (@$_SERVER['PHP_AUTH_USER']) {
-		$loginRes = checkLogin(strtoupper(@$_SERVER['PHP_AUTH_USER']), @$_SERVER['PHP_AUTH_PW']);
+		$retryAfter = 0;
+		$loginRes = checkLogin(strtoupper($_SERVER['PHP_AUTH_USER']), $_SERVER['PHP_AUTH_PW'] ?? '', $retryAfter);
 	} else {
 		$loginRes = false;
+	}
+	if ($loginRes === null) {
+		header('HTTP/1.1 429 Too Many Requests');
+		header('Retry-After: ' . max(1, (int)$retryAfter));
+		exit;
 	}
 	if (!$loginRes) {
 		header('WWW-Authenticate: Basic realm="HamAlert"');
@@ -87,8 +93,139 @@ if (@$isApi) {
 	exit;
 }
 
-function checkLogin($username, $password) {
+// Pause online password guessing after this many failures from one IP or
+// against one username. The window is fixed: refused attempts do not extend
+// it. A successful login clears that username's counter only, so it cannot
+// reset the IP limit.
+function loginThrottleLimit() {
+	return 20;
+}
+
+function loginThrottleWindow() {
+	return 900;
+}
+
+function loginAttemptKeys($username) {
+	$keys = [];
+	$ip = $_SERVER['REMOTE_ADDR'] ?? '';
+	if (is_string($ip) && $ip !== '') {
+		$keys[] = 'ip:' . $ip;
+	}
+	if (is_string($username) && $username !== '') {
+		$keys[] = 'user:' . substr(strtoupper($username), 0, 64);
+	}
+	return $keys;
+}
+
+function loginAttemptState($username) {
+	global $db;
+
+	$state = ['keys' => loginAttemptKeys($username), 'counts' => [], 'wait' => 0];
+	if (!$state['keys']) {
+		return $state;
+	}
+
+	try {
+		$now = time();
+		$docs = $db->loginAttempts->find([
+			'_id' => ['$in' => $state['keys']],
+			'until' => ['$gt' => new MongoDB\BSON\UTCDateTime($now * 1000)],
+		]);
+		foreach ($docs as $doc) {
+			$count = (int)($doc['n'] ?? 0);
+			$state['counts'][(string)$doc['_id']] = $count;
+			if ($count >= loginThrottleLimit() && isset($doc['until'])) {
+				$remaining = $doc['until']->toDateTime()->getTimestamp() - $now;
+				if ($remaining > $state['wait']) {
+					$state['wait'] = $remaining;
+				}
+			}
+		}
+	} catch (Throwable $e) {
+		// A counter outage should not take login down with it.
+		authLog('counter read failed: ' . $e->getMessage());
+		$state['counts'] = [];
+		$state['wait'] = 0;
+	}
+	return $state;
+}
+
+function authLog($message) {
+	error_log('HamAlert auth: ' . preg_replace('/[[:cntrl:]]+/', ' ', $message));
+}
+
+function authLogField($value) {
+	if (!is_string($value) || $value === '') {
+		return '-';
+	}
+	return substr(preg_replace('/[[:cntrl:]]+/', '', $value), 0, 64);
+}
+
+function noteLoginFailure($keys) {
+	global $db;
+
+	$counts = [];
+	$nowMs = time() * 1000;
+	$now = new MongoDB\BSON\UTCDateTime($nowMs);
+	$until = new MongoDB\BSON\UTCDateTime($nowMs + loginThrottleWindow() * 1000);
+	foreach ($keys as $key) {
+		try {
+			$doc = $db->loginAttempts->findOne([
+				'_id' => $key,
+				'until' => ['$gt' => $now],
+			]);
+			if ($doc) {
+				$db->loginAttempts->updateOne(['_id' => $key], ['$inc' => ['n' => 1]]);
+				$counts[$key] = (int)($doc['n'] ?? 0) + 1;
+			} else {
+				$db->loginAttempts->updateOne(
+					['_id' => $key],
+					['$set' => ['n' => 1, 'until' => $until]],
+					['upsert' => true]
+				);
+				$counts[$key] = 1;
+			}
+		} catch (Throwable $e) {
+			authLog('counter update failed: ' . $e->getMessage());
+		}
+	}
+	return $counts;
+}
+
+function clearLoginAttempts($ids) {
+	global $db;
+
+	if (!$ids) {
+		return;
+	}
+	try {
+		$db->loginAttempts->deleteMany(['_id' => ['$in' => array_values($ids)]]);
+	} catch (Throwable $e) {
+	}
+}
+
+function checkLogin($username, $password, &$retryAfter = null) {
 	global $db, $config;
+
+	$retryAfter = 0;
+	if (!is_string($username)) {
+		$username = '';
+	}
+	if (!is_string($password)) {
+		$password = '';
+	}
+
+	$state = loginAttemptState($username);
+	if ($state['wait'] > 0) {
+		$retryAfter = $state['wait'];
+		authLog(sprintf(
+			'paused user=%s ip=%s retry_after=%d',
+			authLogField($username),
+			authLogField($_SERVER['REMOTE_ADDR'] ?? ''),
+			$state['wait']
+		));
+		return null;
+	}
 	
 	$user = $db->users->findOne(['username' => $username]);
 	
@@ -97,10 +234,38 @@ function checkLogin($username, $password) {
 		$db->users->updateOne(['username' => $username], makeUpdate([
 			'lastLogin' => new MongoDB\BSON\UTCDateTime()
 		]));
+		$cleared = [];
+		foreach (array_keys($state['counts']) as $id) {
+			if (substr($id, 0, 5) === 'user:') {
+				$cleared[] = $id;
+			}
+		}
+		clearLoginAttempts($cleared);
 		return true;
-	} else {
-		return false;
 	}
+
+	$counts = noteLoginFailure($state['keys']);
+	$ipFails = 0;
+	$userFails = 0;
+	foreach ($counts as $key => $count) {
+		if (substr($key, 0, 3) === 'ip:') {
+			$ipFails = $count;
+		} else if (substr($key, 0, 5) === 'user:') {
+			$userFails = $count;
+		}
+	}
+	$limit = loginThrottleLimit();
+	authLog(sprintf(
+		'%s user=%s ip=%s ip_fails=%d/%d user_fails=%d/%d',
+		($ipFails >= $limit || $userFails >= $limit) ? 'paused' : 'failed',
+		authLogField($username),
+		authLogField($_SERVER['REMOTE_ADDR'] ?? ''),
+		$ipFails,
+		$limit,
+		$userFails,
+		$limit
+	));
+	return false;
 }
 
 function refreshUser() {

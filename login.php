@@ -7,11 +7,13 @@ if (@$_SESSION['user']) {
 	redirectAfterLogin();
 }
 
-if (@$_REQUEST['username'] && @$_REQUEST['password']) {
+$loginThrottled = false;
+if (@$_REQUEST['username'] && is_string($_REQUEST['username']) && @$_REQUEST['password']) {
 	$loginResult = checkLogin(strtoupper($_REQUEST['username']), $_REQUEST['password']);
 	if ($loginResult) {
 		redirectAfterLogin();
 	}
+	$loginThrottled = $loginResult === null;
 }
 
 // Only follow goto when it is a same-site path. Reject absolute URLs,
@@ -52,7 +54,11 @@ function redirectAfterLogin() {
 	*/ ?>
 
 	<form class="form-signin" method="post">
-		<?php if (@$loginResult === false): ?>
+		<?php if ($loginThrottled): ?>
+		<div class="alert alert-danger" role="alert">
+			Too many login attempts. Please wait a few minutes and try again.
+		</div>
+		<?php elseif (@$loginResult === false): ?>
 		<div class="alert alert-danger" role="alert">
 			Login failed; please check username and password. <strong>Make sure to enter your username/callsign, not your email address!</strong>
 		</div>
