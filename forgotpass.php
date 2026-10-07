@@ -7,6 +7,7 @@ $errors = [];
 if ($_POST) {
 	$email = $_POST['email'];
 	$username = @$_POST['username'];
+	$user = null;
 	
 	if ($email) {
 		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
