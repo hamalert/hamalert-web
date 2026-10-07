@@ -4,24 +4,31 @@ $loginOptional = true;
 require_once("db.inc.php");
 
 if (@$_SESSION['user']) {
-	if (@$_GET['goto']) {
-		header("Location: " . $_GET['goto']);
-	} else {
-		header("Location: triggers");
-	}
-	exit;
+	redirectAfterLogin();
 }
 
 if (@$_REQUEST['username'] && @$_REQUEST['password']) {
 	$loginResult = checkLogin(strtoupper($_REQUEST['username']), $_REQUEST['password']);
 	if ($loginResult) {
-		if (@$_GET['goto']) {
-			header("Location: " . $_GET['goto']);
-		} else {
-			header("Location: triggers");
-		}
-		exit;
+		redirectAfterLogin();
 	}
+}
+
+// Only follow goto when it is a same-site path. Reject absolute URLs,
+// protocol-relative URLs (//evil.example, ///evil.example), and backslash
+// variants that browsers normalize into those.
+function redirectAfterLogin() {
+	$goto = $_GET['goto'] ?? '';
+	$parts = is_string($goto) ? parse_url($goto) : false;
+	$path = is_array($parts) ? ($parts['path'] ?? '') : '';
+	$safe = is_array($parts)
+		&& !isset($parts['scheme'])
+		&& !isset($parts['host'])
+		&& !isset($parts['user'])
+		&& !preg_match('/[[:cntrl:]\\\\]/', $goto)
+		&& preg_match('#\A/[A-Za-z0-9_]*\z#', $path);
+	header('Location: ' . ($safe ? $goto : 'triggers'));
+	exit;
 }
 
 ?>
