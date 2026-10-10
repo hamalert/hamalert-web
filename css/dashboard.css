@@ -32,6 +32,11 @@ form.limit-width textarea {
 	max-width: 45em;
 }
 
+textarea.blocked-spotters {
+	max-width: 24em;
+	text-transform: uppercase;
+}
+
 /* Simulate form */
 #simulateForm table {
 	width: auto;

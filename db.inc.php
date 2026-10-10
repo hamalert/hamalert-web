@@ -483,6 +483,15 @@ function deleteLimit($limit) {
 	refreshUser();
 }
 
+function setBlockedSpotters($callsigns) {
+	global $db;
+
+	$db->users->updateOne(['_id' => $_SESSION['user']['_id']], makeUpdate([
+		'blockedSpotters' => $callsigns ? $callsigns : null
+	]));
+	refreshUser();
+}
+
 function setClublogInfo($email, $password) {
 	global $db;
 	

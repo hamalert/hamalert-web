@@ -61,6 +61,11 @@ include('settings_begin.inc.php') ?>
 </ul>
 
 
+<h3>How can I ignore certain spotters on all triggers?</h3>
+
+<p>On the <a href="triggers">Triggers</a> page, <strong>Blocked spotters</strong> is a list of spotter callsigns excluded from every trigger. Enter the exact callsign, including any prefixes or suffixes, separated with commas, spaces or line breaks. A trigger that already has a “not Spotter callsign” condition keeps its own list; the blocked callsigns are added to it. The callsigns on the trigger stay as you saved them, and the combined list is what matching uses.</p>
+
+
 <a name="dstar"></a><h3>How do D-STAR alerts work?</h3>
 
 <p>D-STAR alerts (mode “D-STAR”) are <em>presence</em> alerts rather than DX spots: they are generated from the “last heard” logs of the

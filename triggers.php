@@ -5,6 +5,69 @@ include('settings_begin.inc.php');
 
 refreshUser();	// app tokens could have changed externally
 
+// The textarea is split here; blockedSpotters is stored as an array of callsigns.
+function parseBlockedSpotters($text, &$error) {
+	$error = null;
+	if (!is_string($text)) {
+		$error = "Invalid blocked spotter list.";
+		return null;
+	}
+	if (strlen($text) > 200000) {
+		$error = "The blocked spotter list is too long.";
+		return null;
+	}
+
+	$text = trim($text);
+	if ($text === '') {
+		return [];
+	}
+
+	$parts = preg_split('/[\s,]+/', $text, -1, PREG_SPLIT_NO_EMPTY);
+	$callsigns = [];
+	$seen = [];
+	foreach ($parts as $part) {
+		$callsign = strtoupper($part);
+		if (!preg_match('/^[A-Z0-9\/-]{3,20}$/', $callsign)) {
+			$error = "Invalid callsign '$callsign'.";
+			return null;
+		}
+		if (isset($seen[$callsign])) {
+			continue;
+		}
+		$seen[$callsign] = true;
+		$callsigns[] = $callsign;
+	}
+	if (count($callsigns) > 5000) {
+		$error = "Lists may not have more than 5000 entries.";
+		return null;
+	}
+	sort($callsigns, SORT_STRING);
+	return $callsigns;
+}
+
+$blockedSpotterErrors = [];
+$blockedSpottersSaved = false;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveBlockedSpotters'])) {
+	$blockedSpotterError = null;
+	$parsedBlockedSpotters = parseBlockedSpotters($_POST['blockedSpotters'] ?? '', $blockedSpotterError);
+	if ($blockedSpotterError) {
+		$blockedSpotterErrors[] = $blockedSpotterError;
+		$blockedSpottersText = is_string($_POST['blockedSpotters'] ?? null) ? $_POST['blockedSpotters'] : '';
+	} else {
+		setBlockedSpotters($parsedBlockedSpotters);
+		reloadMatcher();
+		$blockedSpottersSaved = true;
+	}
+}
+
+$savedBlockedSpotters = $_SESSION['user']['blockedSpotters'] ?? [];
+if (!is_array($savedBlockedSpotters)) {
+	$savedBlockedSpotters = [];
+}
+if (!isset($blockedSpottersText)) {
+	$blockedSpottersText = implode("\n", $savedBlockedSpotters);
+}
+
 $actionStatus = array(
 	'threema' => (@$_SESSION['user']['threemaId']) ? true : false,
 	'url' => (@$_SESSION['user']['notificationUrl']) ? true : false,
@@ -243,6 +306,31 @@ function disableTrigger(button, disabled) {
 </script>
 
 <?php include("trigger_editor.inc.php") ?>
+
+<?php foreach ($blockedSpotterErrors as $error): ?>
+<div class="alert alert-danger" role="alert">
+	<?php echo htmlspecialchars($error) ?>
+</div>
+<?php endforeach; ?>
+
+<?php if ($blockedSpottersSaved): ?>
+<div class="alert alert-success alert-dismissible" role="alert">
+	<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	Blocked spotters have been updated. Changes may take up to a minute to be applied.
+</div>
+<?php endif; ?>
+
+<fieldset id="blocked-spotters">
+	<legend>Blocked spotters</legend>
+	<form class="limit-width" method="post" autocomplete="off">
+		<div class="form-group">
+			<label for="blockedSpotters">Spotter callsigns excluded from every trigger</label>
+			<textarea class="form-control blocked-spotters" id="blockedSpotters" name="blockedSpotters" rows="4" spellcheck="false" autocapitalize="characters"><?php echo htmlspecialchars($blockedSpottersText) ?></textarea>
+			<p class="help-block">These exact callsigns, including any prefixes or suffixes, are excluded from all of your triggers. Separate them with commas, spaces or line breaks. A trigger that already has a “not Spotter callsign” condition keeps that list; the callsigns here are added to it. Leave the box empty to clear the list.</p>
+		</div>
+		<button type="submit" name="saveBlockedSpotters" value="1" class="btn btn-primary">Save</button>
+	</form>
+</fieldset>
 
 <small class="text-muted">Changes may take up to a minute to be applied.</small>
 

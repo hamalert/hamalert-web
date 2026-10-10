@@ -11,6 +11,12 @@ include('settings_begin.inc.php') ?>
 </div>
 */ ?>
 
+<h3>2026-10-10</h3>
+
+<ul>
+	<li>Blocked spotters: a list of spotter callsigns on the <a href="triggers">Triggers</a> page is excluded from every trigger. A trigger that already has a “not Spotter callsign” condition uses the combined list. See the <a href="help">help page</a> for details.</li>
+</ul>
+
 <h3>2026-10-04</h3>
 
 <ul>

@@ -18,7 +18,7 @@ if (@$userScalable)
 
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/bootstrap-dialog.min.css" rel="stylesheet">
-	<link href="css/dashboard.css?v=4" rel="stylesheet">
+	<link href="css/dashboard.css?v=6" rel="stylesheet">
 	<link href="css/pace.css" rel="stylesheet">
 	<link rel="stylesheet" href="css/bootstrap-select.min.css">
 	<link rel="stylesheet" href="css/ladda-themeless.min.css">
