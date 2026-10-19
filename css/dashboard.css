@@ -31,6 +31,10 @@ form.limit-width input, form.limit-width .input-group {
 form.limit-width textarea {
 	max-width: 45em;
 }
+form.limit-width cap-widget {
+	display: block;
+	margin-bottom: 1.5em;
+}
 
 textarea.blocked-spotters {
 	max-width: 24em;

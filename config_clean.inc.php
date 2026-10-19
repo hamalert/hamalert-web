@@ -65,5 +65,11 @@ $config = array(
 		'telnet' => 'Telnet'
 	],
 
-	'discourse_connect_secret' => '<redacted>'
+	'discourse_connect_secret' => '<redacted>',
+
+	'captcha' => [
+		'api_endpoint' => 'https://captcha.hamalert.org',
+		'site_key' => 'ded2f16b4e',
+		'secret_key' => '<redacted>'
+	]
 );
