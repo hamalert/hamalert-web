@@ -2,30 +2,36 @@
 $loginOptional = true;
 $pageTitle = 'Forgot password';
 require_once("db.inc.php");
+require_once("captcha.inc.php");
 
 $errors = [];
 if ($_POST) {
 	$email = $_POST['email'];
 	$username = @$_POST['username'];
+	$captchaToken = @$_POST['cap-token'];
 	$user = null;
-	
-	if ($email) {
-		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-			$errors[] = "The specified email address is invalid.";
-		} else {
-			$user = getUserForAccountEmail($email);
+
+	if (!verifyCaptchaToken($captchaToken)) {
+		$errors[] = "Please complete the verification and try again.";
+	} else {
+		if ($email) {
+			if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+				$errors[] = "The specified email address is invalid.";
+			} else {
+				$user = getUserForAccountEmail($email);
+			}
 		}
+		if (!$user && $username) {
+			$user = getUserForUsername(trim(strtoupper($username)));
+		}
+
+		if ($user) {
+			$ts = time();
+			$h = substr(hash_hmac("sha256", $user['username'] . "-" . $ts, $config['forgotpass_hashkey']), 0, 32);
+			sendResetMail($ts, $h, $user['username'], $user['accountEmail']);
+		}
+		$resetOk = true;	// don't leak information if user/email exists
 	}
-	if (!$user && $username) {
-		$user = getUserForUsername(trim(strtoupper($username)));
-	}
-	
-	if ($user) {
-		$ts = time();
-		$h = substr(hash_hmac("sha256", $user['username'] . "-" . $ts, $config['forgotpass_hashkey']), 0, 32);
-		sendResetMail($ts, $h, $user['username'], $user['accountEmail']);
-	}
-	$resetOk = true;	// don't leak information if user/email exists
 }
 
 function sendResetMail($ts, $h, $username, $email) {
@@ -70,6 +76,11 @@ EOD;
 	Enter <strong>either</strong> your username or your email address to reset your HamAlert password.
 </div>
 
+<?php $captchaAssetBase = htmlspecialchars(rtrim($config['captcha']['api_endpoint'], '/') . '/assets/'); ?>
+<script>
+	window.CAP_CUSTOM_WASM_URL = "<?php echo $captchaAssetBase ?>cap_wasm_bg.wasm";
+	window.CAP_CUSTOM_HASHWX_URL = "<?php echo $captchaAssetBase ?>hashwx.wasm";
+</script>
 <form method="post" class="limit-width">
 	<div class="form-group">
 		<label for="email">Username/Callsign</label>
@@ -81,8 +92,10 @@ EOD;
 		<input type="email" class="form-control" id="email" name="email" placeholder="user@domain.com" value="<?php echo htmlspecialchars(@$email ?? "") ?>" />
 		<p class="help-block">Alternatively, enter the email address that you used when you created your account.</p>
 	</div>
+	<cap-widget id="cap" required data-cap-api-endpoint="<?php echo htmlspecialchars(rtrim($config['captcha']['api_endpoint'], '/') . '/' . rawurlencode($config['captcha']['site_key']) . '/') ?>"></cap-widget>
 	<button type="submit" class="btn btn-primary">Reset password</button>
 </form>
+<script src="<?php echo $captchaAssetBase ?>widget.js"></script>
 
 <?php endif; ?>
 
