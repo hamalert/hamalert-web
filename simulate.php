@@ -17,9 +17,9 @@ include('settings_begin.inc.php') ?>
 			changeSpot();
 		});
 
-		// The D-STAR fields (event/node/reflector) only make sense for mode 'dstar'; grey them
-		// out otherwise. Picking one of the three D-STAR sources implies D-STAR, so switch mode
-		// to it automatically - but the actual enabling/disabling is keyed on mode, not source.
+		// The D-STAR fields (event/node/reflector) only make sense for mode 'dstar'; hide them
+		// otherwise. Picking one of the three D-STAR sources implies D-STAR, so switch mode
+		// to it automatically - but the actual showing/hiding is keyed on mode, not source.
 		$('#mode').change(updateDstarFields);
 		$('#source').change(function() {
 			if (dstarSources.indexOf($('#source').val()) !== -1 && $('#mode').val() !== 'dstar') {
@@ -41,11 +41,10 @@ include('settings_begin.inc.php') ?>
 		$('#spotSent').hide();
 	}
 
-	// Enables the D-STAR fields when mode is 'dstar', and disables (and clears) them otherwise
+	// Shows the D-STAR rows when mode is 'dstar', and hides (and clears) them otherwise
 	function updateDstarFields() {
 		var isDstar = ($('#mode').val() === 'dstar');
-		$('#dvNode, #dvReflector, #dvGroup').prop('disabled', !isDstar);
-		$('#dvEvent').prop('disabled', !isDstar).selectpicker('refresh');
+		$('.dstarRow').toggle(isDstar);
 		if (!isDstar) {
 			$('#dvNode').val('');
 			$('#dvReflector').val('');
@@ -189,7 +188,7 @@ input::-webkit-inner-spin-button {
 				<td><input type="text" class="form-control" id="comment" placeholder="" />
 				<p class="help-block">The comment field is parsed for WWFF, POTA and SOTA references.</p></td>
 			</tr>
-			<tr>
+			<tr class="dstarRow">
 				<th>D-STAR event</th>
 				<td>
 					<select id="dvEvent" class="selectpicker" data-width="auto">
@@ -200,17 +199,17 @@ input::-webkit-inner-spin-button {
 					<p class="help-block">optional, only for mode D-STAR</p>
 				</td>
 			</tr>
-			<tr>
+			<tr class="dstarRow">
 				<th>D-STAR node</th>
 				<td><input type="text" class="form-control" id="dvNode" placeholder="W4HFH-C" style="text-transform: uppercase" />
 				<p class="help-block">required for mode D-STAR (repeater/hotspot callsign and module)</p></td>
 			</tr>
-			<tr>
+			<tr class="dstarRow">
 				<th>D-STAR reflector</th>
 				<td><input type="text" class="form-control" id="dvReflector" placeholder="REF030-C" style="text-transform: uppercase" />
 				<p class="help-block">optional, only for mode D-STAR</p></td>
 			</tr>
-			<tr>
+			<tr class="dstarRow">
 				<th>D-STAR group</th>
 				<td><input type="text" class="form-control" id="dvGroup" placeholder="DSTAR1" style="text-transform: uppercase" />
 				<p class="help-block">optional, only for mode D-STAR (e.g. DSTAR1)</p></td>
